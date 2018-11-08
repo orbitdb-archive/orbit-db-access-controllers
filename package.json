@@ -4,7 +4,7 @@
   "description": "Access Controller for OrbitDB",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "TEST=all mocha"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,10 @@
     "ipfs-repo": "~0.22.1",
     "ipfsd-ctl": "~0.37.5",
     "mocha": "^5.2.0",
+    "orbit-db": "https://github.com/shamb0t/orbit-db#feat/orbitdb-ac",
+    "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider#feat/verify-identity",
+    "orbit-db-keystore": "github:orbitdb/orbit-db-keystore#fix/verification",
+    "p-map-series": "^1.0.0",
     "web3": "~1.0.0-beta.36"
   }
 }
