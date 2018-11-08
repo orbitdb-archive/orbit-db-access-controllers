@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/orbitdb/orbit-db-access-controllers/issues"
   },
-  "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme"
+  "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
 }
