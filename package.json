@@ -1,0 +1,19 @@
+{
+  "name": "orbit-db-access-controllers",
+  "version": "0.0.1",
+  "description": "Access Controller for OrbitDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orbitdb/orbit-db-access-controllers.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/orbitdb/orbit-db-access-controllers/issues"
+  },
+  "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme"
+}
