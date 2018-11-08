@@ -17,6 +17,13 @@
   },
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
   "devDependencies": {
-    "mocha": "^5.2.0"
+    "@colony/purser-software": "^1.1.2",
+    "datastore-level": "~0.8.0",
+    "go-ipfs-dep": "0.4.13",
+    "ipfs": "~0.30.0",
+    "ipfs-repo": "~0.22.1",
+    "ipfsd-ctl": "~0.37.5",
+    "mocha": "^5.2.0",
+    "web3": "~1.0.0-beta.36"
   }
 }
