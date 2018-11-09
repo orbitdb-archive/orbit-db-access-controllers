@@ -24,7 +24,7 @@
     "ipfs-repo": "~0.25.0",
     "ipfsd-ctl": "~0.37.5",
     "mocha": "^5.2.0",
-    "orbit-db": "https://github.com/shamb0t/orbit-db#feat/orbitdb-ac",
+    "orbit-db": "https://github.com/orbitdb/orbit-db#orbit-db-access-controller",
     "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider#feat/verify-identity",
     "orbit-db-keystore": "github:orbitdb/orbit-db-keystore#fix/verification",
     "p-map-series": "^1.0.0",
