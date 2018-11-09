@@ -18,10 +18,10 @@
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
   "devDependencies": {
     "@colony/purser-software": "^1.1.2",
-    "datastore-level": "~0.8.0",
+    "datastore-level": "~0.10.0",
     "go-ipfs-dep": "0.4.13",
-    "ipfs": "~0.30.0",
-    "ipfs-repo": "~0.22.1",
+    "ipfs": "~0.33.0",
+    "ipfs-repo": "~0.25.0",
     "ipfsd-ctl": "~0.37.5",
     "mocha": "^5.2.0",
     "orbit-db": "https://github.com/shamb0t/orbit-db#feat/orbitdb-ac",
