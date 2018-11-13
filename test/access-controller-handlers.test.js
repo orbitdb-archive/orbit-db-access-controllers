@@ -9,9 +9,8 @@ const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
 const ContractAccessController = require('../src/contract-access-controller.js')
-const fs = require('fs')
-const path =require('path')
-const abi = JSON.parse(fs.readFileSync(path.resolve('./test/', 'abi.json')))
+const ganache = require('ganache-cli')
+const { abi, bytecode } = require('./Access')
 
 // Include test utilities
 const {
@@ -30,7 +29,7 @@ Object.keys(testAPIs).forEach(API => {
   describe('orbit-db - Access Controller Handlers', function() {
     this.timeout(config.timeout)
 
-    let web3, ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
+    let web3, contract, ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
     let orbitdb1, orbitdb2, db1, db2
 
     before(async () => {
@@ -51,19 +50,17 @@ Object.keys(testAPIs).forEach(API => {
       id1 = await IdentityProvider.createIdentity(keystore1, 'userAA')
       id2 = await IdentityProvider.createIdentity(keystore2, 'userBB')
 
-      orbitdb1 = await OrbitDB.createInstance(ipfs1, { 
+      orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
-      orbitdb2 = await OrbitDB.createInstance(ipfs2, { 
+      orbitdb2 = await OrbitDB.createInstance(ipfs2, {
         ACFactory: AccessControllers,
         directory: dbPath2,
         identity: id2
       })
-
-      // web3 = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8546'))
     })
 
     after(async () => {
@@ -99,19 +96,22 @@ Object.keys(testAPIs).forEach(API => {
           abi: abi,
         }
         AccessControllers.addAccessController(options)
-        assert.equal(AccessControllers.isSupported('eth-contract/my-contract-ac'), true)
+        assert.equal(AccessControllers.isSupported('eth-contract'), true)
       })
     })
 
     describe('create access controllers', function() {
-      const options = {
+      let options = {
         AccessController: ContractAccessController,
-        web3: {}, // disabled for now to get CI running
-        abi: abi,
-        contractAddress: '0xF9d040A318c468a8AAeB5B61d73bB20b799d847D'
       }
 
-      before(() => {
+      before(async () => {
+        web3 = new Web3(ganache.provider())
+        let accounts = await web3.eth.getAccounts()
+        contract = await new web3.eth.Contract(abi)
+                                .deploy({ data: bytecode })
+                                .send({ from: accounts[0], gas: '1000000'})
+        options = Object.assign({}, options, { web3, abi, contractAddress: contract._address })
         AccessControllers.addAccessController(options)
       })
 
@@ -146,7 +146,7 @@ Object.keys(testAPIs).forEach(API => {
 
       it('removes the custom access controller', async () => {
         AccessControllers.removeAccessController(ContractAccessController.type)
-        assert.equal(AccessControllers.isSupported('eth-contract/my-contract-ac'), false)
+        assert.equal(AccessControllers.isSupported('eth-contract'), false)
       })
     })
   })
