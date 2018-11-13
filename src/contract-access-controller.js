@@ -2,7 +2,7 @@
 
 const AccessController = require('./access-controller-interface')
 
-const type = 'eth-contract/my-contract-ac'
+const type = 'eth-contract'
 
 class ContractAccessController extends AccessController {
   constructor(web3, abi, address) {
