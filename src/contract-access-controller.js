@@ -28,14 +28,17 @@ class ContractAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Write the custom access control logic here
+    if (!this.web3.utils.isAddress(entry.identity.id)) return Promise.resolve(false)
     return await this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
   }
 
   async grant (capability, identifier, options = {}) {
+    if (!this.web3.utils.isAddress(identifier)) return Promise.resolve(false)
     return await this.contract.methods.grantCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
   }
 
   async revoke (capability, identifier, options = {}) {
+    if (!this.web3.utils.isAddress(identifier)) return Promise.resolve(false)
     return await this.contract.methods.revokeCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
   }
 
