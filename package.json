@@ -19,6 +19,7 @@
   "devDependencies": {
     "@colony/purser-software": "^1.1.2",
     "datastore-level": "~0.10.0",
+    "ganache-cli": "^6.1.8",
     "go-ipfs-dep": "0.4.13",
     "ipfs": "~0.33.0",
     "ipfs-repo": "~0.25.0",
