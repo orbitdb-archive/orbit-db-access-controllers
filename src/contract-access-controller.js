@@ -15,7 +15,9 @@ class ContractAccessController extends AccessController {
   // Returns the type of the access controller
   static get type () { return type }
 
-  async load (address, options) {}
+  async load () {
+    this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress)
+  }
 
   async save () {
     return {
@@ -26,7 +28,7 @@ class ContractAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Write the custom access control logic here
-    return await this.contract.methods.isPermitted(identifier, this.web3.utils.fromAscii('write')).call()
+    return await this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
   }
 
   async grant (identifier, capability) {
