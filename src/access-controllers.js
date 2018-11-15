@@ -7,8 +7,7 @@ const ContractAccessController = require('./contract-access-controller')
 
 let supportedTypes = {
   'ipfs': IPFSAccessController,
-  'orbitdb': OrbitDBAccessController,
-  'eth-contract': ContractAccessController
+  'orbitdb': OrbitDBAccessController
 }
 
 const getHandlerFor = (type) => {

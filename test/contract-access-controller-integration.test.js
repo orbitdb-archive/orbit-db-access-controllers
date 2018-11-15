@@ -1,4 +1,4 @@
-h'use strict'
+'use strict'
 
 const assert = require('assert')
 const rmrf = require('rimraf')
@@ -6,6 +6,7 @@ const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
+const ContractAccessController = require('../src/contract-access-controller')
 const { open } = require('@colony/purser-software')
 const { abi, bytecode } = require('./Access')
 const ganache = require('ganache-cli')
@@ -61,6 +62,10 @@ Object.keys(testAPIs).forEach(API => {
       contract = await new web3.eth.Contract(abi)
                           .deploy({ data: bytecode })
                           .send({ from: accounts[0], gas: '1000000' })
+
+      AccessControllers.addAccessController({
+        AccessController: ContractAccessController,
+      })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
