@@ -3,10 +3,12 @@
 const AccessControllerManifest = require('./access-controller-manifest')
 const IPFSAccessController = require('./ipfs-access-controller')
 const OrbitDBAccessController = require('./orbitdb-access-controller')
+const ContractAccessController = require('./contract-access-controller')
 
 let supportedTypes = {
   'ipfs': IPFSAccessController,
   'orbitdb': OrbitDBAccessController,
+  'eth-contract': ContractAccessController
 }
 
 const getHandlerFor = (type) => {
@@ -26,7 +28,7 @@ class AccessControllers {
       throw new Error('AccessController class needs to be given as an option')
     }
 
-    if (!options.AccessController.type || 
+    if (!options.AccessController.type ||
       typeof options.AccessController.type !== 'string') {
       throw new Error('Given AccessController class needs to implement: static get type() { /* return a string */}.')
     }
