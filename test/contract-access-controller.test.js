@@ -110,7 +110,7 @@ Object.keys(testAPIs).forEach(API => {
           contractAddress: contract._address,
         })
 
-        await accessController.load(contract._address, abi)
+        await accessController.load()
       })
 
       it('creates an access controller', () => {
@@ -157,7 +157,16 @@ Object.keys(testAPIs).forEach(API => {
           contractAddress: contract._address,
         })
         manifest = await accessController.save()
-        await accessController.load(manifest.abi, manifest.address)
+        
+        accessController = null
+        accessController = await ContractAccessController.create(orbitdb1, {
+          type: 'eth-contract',
+          web3: web3,
+          abi: manifest.abi,
+          contractAddress: manifest.contractAddress,
+        })
+
+        await accessController.load()
       })
 
       it('has correct capabalities', async () => {
