@@ -3,7 +3,6 @@
 const AccessControllerManifest = require('./access-controller-manifest')
 const IPFSAccessController = require('./ipfs-access-controller')
 const OrbitDBAccessController = require('./orbitdb-access-controller')
-const ContractAccessController = require('./contract-access-controller')
 
 let supportedTypes = {
   'ipfs': IPFSAccessController,
@@ -33,6 +32,17 @@ class AccessControllers {
     }
 
     supportedTypes[options.AccessController.type] = options.AccessController
+  }
+
+  static addAccessControllers (options) {
+    const accessControllers = options.AccessControllers
+    if (!accessControllers) {
+      throw new Error('AccessController classes need to be given as an option')
+    }
+
+    accessControllers.forEach((accessController) => {
+      AccessControllers.addAccessController({ AccessController: accessController })
+    })
   }
 
   static removeAccessController (type) {

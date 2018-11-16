@@ -84,7 +84,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('doesn\'t support smart contract access controller by default', () => {
-        assert.equal(AccessControllers.isSupported('eth-contract'), false)
+        assert.equal(AccessControllers.isSupported(ContractAccessController.type), false)
       })
     })
 
@@ -96,7 +96,7 @@ Object.keys(testAPIs).forEach(API => {
           abi: abi,
         }
         AccessControllers.addAccessController(options)
-        assert.equal(AccessControllers.isSupported('eth-contract'), true)
+        assert.equal(AccessControllers.isSupported(ContractAccessController.type), true)
       })
     })
 
@@ -111,7 +111,7 @@ Object.keys(testAPIs).forEach(API => {
         contract = await new web3.eth.Contract(abi)
                                 .deploy({ data: bytecode })
                                 .send({ from: accounts[0], gas: '1000000'})
-        options = Object.assign({}, options, { web3, abi, contractAddress: contract._address })
+        options = Object.assign({}, options, { web3, abi, contractAddress: contract._address, defaultAccount: accounts[0] })
         AccessControllers.addAccessController(options)
       })
 
@@ -146,7 +146,7 @@ Object.keys(testAPIs).forEach(API => {
 
       it('removes the custom access controller', async () => {
         AccessControllers.removeAccessController(ContractAccessController.type)
-        assert.equal(AccessControllers.isSupported('eth-contract'), false)
+        assert.equal(AccessControllers.isSupported(ContractAccessController.type), false)
       })
     })
   })

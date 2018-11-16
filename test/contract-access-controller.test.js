@@ -7,11 +7,11 @@ const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const ContractAccessController = require('../src/contract-access-controller')
+const DepositContractAccessController = require('../src/deposit-contract-access-controller')
 const AccessControllers = require('../')
 const Web3 = require('web3')
 const { open } = require('@colony/purser-software')
 const ganache = require('ganache-cli')
-const { abi, bytecode } = require('./Access')
 
 // Include test utilities
 const {
@@ -26,12 +26,24 @@ const dbPath2 = './orbitdb/tests/contract-access-controller/2'
 const ipfsPath1 = './orbitdb/tests/contract-access-controller/1/ipfs'
 const ipfsPath2 = './orbitdb/tests/contract-access-controller/2/ipfs'
 
+const accessControllers = [
+  {
+    ACType: ContractAccessController,
+    contract: require('./Access')
+  },
+  {
+    ACType: DepositContractAccessController,
+    contract: require('./PayDeposit')
+  }
+]
+
 Object.keys(testAPIs).forEach(API => {
   describe('orbit-db - ContractAccessController', function () {
     this.timeout(config.timeout)
 
-    let ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2, web3, accounts, contract
+    let ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
     let orbitdb1, orbitdb2
+    let web3, accounts
 
     before(async () => {
       config.daemon1.repo = ipfsPath1
@@ -64,9 +76,6 @@ Object.keys(testAPIs).forEach(API => {
 
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
-      contract = await new web3.eth.Contract(abi)
-                              .deploy({ data: bytecode })
-                              .send({ from: accounts[0], gas: '1000000'})
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
@@ -100,83 +109,90 @@ Object.keys(testAPIs).forEach(API => {
     })
 
     describe('Constructor', function () {
-      let accessController
+      accessControllers.forEach(async (ac, i) => {
+        let accessController, contract
+        before(async () => {
+          contract = await new web3.eth.Contract(ac.contract.abi)
+                                  .deploy({ data: ac.contract.bytecode })
+                                  .send({ from: accounts[i], gas: '1000000'})
 
-      before(async () => {
-        accessController = await ContractAccessController.create(orbitdb1, {
-          type: 'eth-contract',
-          web3: web3,
-          abi: abi,
-          contractAddress: contract._address,
+          accessController = await ac.ACType.create(orbitdb1, {
+            type: ac.ACType.type,
+            web3: web3,
+            abi: ac.contract.abi,
+            contractAddress: contract._address,
+            defaultAccount: accounts[i]
+          })
+          await accessController.load()
         })
 
-        await accessController.load()
-      })
-
-      it('creates an access controller', () => {
-        assert.notEqual(accessController, null)
-        assert.notEqual(accessController, undefined)
-      })
-
-      it('sets the controller type', () => {
-        assert.equal(accessController.type, 'eth-contract')
-      })
-
-      it('grants access to key', async () => {
-        const mockEntry = {
-          identity: id1
-          // ...
-          // doesn't matter what we put here, only identity is used for the check
-        }
-        await accessController.grant('write', id1.id, { from: accounts[0] })
-        const canAppend = await accessController.canAppend(mockEntry, id1.provider)
-        assert.equal(canAppend, true)
-      })
-
-      it('grants access to multiple keys', async () => {
-        const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
-        const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
-
-        await accessController.grant('write', orbitdb2.identity.id, { from: accounts[0] })
-        const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity })
-
-        assert.equal(canAppend1, true)
-        assert.equal(canAppend2, false)
-        assert.equal(canAppend3, true)
-      })
-    })
-
-    describe('save and load', function () {
-      let accessController, manifest
-
-      before(async () => {
-        accessController = await ContractAccessController.create(orbitdb1, {
-          type: 'eth-contract',
-          web3: web3,
-          abi: abi,
-          contractAddress: contract._address,
-        })
-        manifest = await accessController.save()
-        
-        accessController = null
-        accessController = await ContractAccessController.create(orbitdb1, {
-          type: 'eth-contract',
-          web3: web3,
-          abi: manifest.abi,
-          contractAddress: manifest.contractAddress,
+        it('creates an access controller', () => {
+          assert.notEqual(accessController, null)
+          assert.notEqual(accessController, undefined)
         })
 
-        await accessController.load()
-      })
+        it('sets the controller type', () => {
+          assert.equal(accessController.type, ac.ACType.type)
+        })
 
-      it('has correct capabalities', async () => {
-        const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
-        const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
-        const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} })
+        it('grants access to key', async () => {
+          const mockEntry = {
+            identity: id1
+            // ...
+            // doesn't matter what we put here, only identity is used for the check
+          }
+          await accessController.grant('write', id1.id)
+          const canAppend = await accessController.canAppend(mockEntry, id1.provider)
+          assert.equal(canAppend, true)
+        })
 
-        assert.equal(canAppend1, true)
-        assert.equal(canAppend2, true)
-        assert.equal(canAppend3, false)
+        it('grants access to multiple keys', async () => {
+          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
+          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
+
+          await accessController.grant('write', orbitdb2.identity.id)
+          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity })
+
+          assert.equal(canAppend1, true)
+          assert.equal(canAppend2, false)
+          assert.equal(canAppend3, true)
+        })
+
+        describe('save and load', function () {
+          let accessController, manifest
+
+          before(async () => {
+            accessController = await ac.ACType.create(orbitdb1, {
+              type: ac.ACType.type,
+              web3: web3,
+              abi: ac.contract.abi,
+              contractAddress: contract._address,
+              defaultAccount: accounts[i]
+            })
+            manifest = await accessController.save()
+
+            accessController = null
+            accessController = await ac.ACType.create(orbitdb1, {
+              type: ac.ACType.type,
+              web3: web3,
+              abi: manifest.abi,
+              contractAddress: manifest.contractAddress,
+              defaultAccount: accounts[i]
+            })
+
+            await accessController.load()
+          })
+
+          it('has correct capabalities', async () => {
+            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
+            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
+            const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} })
+
+            assert.equal(canAppend1, true)
+            assert.equal(canAppend2, true)
+            assert.equal(canAppend3, false)
+          })
+        })
       })
     })
   })
