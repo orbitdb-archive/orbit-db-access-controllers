@@ -28,11 +28,11 @@ const ipfsPath2 = './orbitdb/tests/contract-access-controller/2/ipfs'
 
 const accessControllers = [
   {
-    ACType: ContractAccessController,
+    AccessController: ContractAccessController,
     contract: require('./Access')
   },
   {
-    ACType: DepositContractAccessController,
+    AccessController: DepositContractAccessController,
     contract: require('./PayDeposit')
   }
 ]
@@ -116,8 +116,8 @@ Object.keys(testAPIs).forEach(API => {
                                   .deploy({ data: ac.contract.bytecode })
                                   .send({ from: accounts[i], gas: '1000000'})
 
-          accessController = await ac.ACType.create(orbitdb1, {
-            type: ac.ACType.type,
+          accessController = await ac.AccessController.create(orbitdb1, {
+            type: ac.AccessController.type,
             web3: web3,
             abi: ac.contract.abi,
             contractAddress: contract._address,
@@ -132,7 +132,7 @@ Object.keys(testAPIs).forEach(API => {
         })
 
         it('sets the controller type', () => {
-          assert.equal(accessController.type, ac.ACType.type)
+          assert.equal(accessController.type, ac.AccessController.type)
         })
 
         it('grants access to key', async () => {
@@ -162,8 +162,8 @@ Object.keys(testAPIs).forEach(API => {
           let accessController, manifest
 
           before(async () => {
-            accessController = await ac.ACType.create(orbitdb1, {
-              type: ac.ACType.type,
+            accessController = await ac.AccessController.create(orbitdb1, {
+              type: ac.AccessController.type,
               web3: web3,
               abi: ac.contract.abi,
               contractAddress: contract._address,
@@ -172,8 +172,8 @@ Object.keys(testAPIs).forEach(API => {
             manifest = await accessController.save()
 
             accessController = null
-            accessController = await ac.ACType.create(orbitdb1, {
-              type: ac.ACType.type,
+            accessController = await ac.AccessController.create(orbitdb1, {
+              type: ac.AccessController.type,
               web3: web3,
               abi: manifest.abi,
               contractAddress: manifest.contractAddress,

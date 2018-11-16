@@ -27,11 +27,11 @@ const ipfsPath2 = './orbitdb/tests/contract-access-controller-integration/2/ipfs
 
 const accessControllers = [
   {
-    ACType: ContractAccessController,
+    AccessController: ContractAccessController,
     contract: require('./Access')
   },
   {
-    ACType: DepositContractAccessController,
+    AccessController: DepositContractAccessController,
     contract: require('./PayDeposit')
   }
 ]
@@ -123,7 +123,7 @@ Object.keys(testAPIs).forEach(API => {
           db = await orbitdb1.feed('AABB', {
             identity: id1,
             accessController: {
-              type: ac.ACType.type,
+              type: ac.AccessController.type,
               web3: web3,
               abi: ac.contract.abi,
               contractAddress: contract._address,
@@ -178,7 +178,7 @@ Object.keys(testAPIs).forEach(API => {
 
         describe('access controller manifest', () => {
           it('has correct type', async () => {
-            assert.equal(acManifest.type, ac.ACType.type)
+            assert.equal(acManifest.type, ac.AccessController.type)
           })
 
           it('has correct address', async () => {
