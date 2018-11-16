@@ -150,7 +150,7 @@ Object.keys(testAPIs).forEach(API => {
         })
 
         it('makes database use the correct access controller', async () => {
-          assert.equal(acManifest.params.contractAddress, db.access.contract._address)
+          assert.equal(acManifest.params.contractAddress, db.access.address)
         })
 
         it('saves database manifest file locally', async () => {
@@ -183,7 +183,7 @@ Object.keys(testAPIs).forEach(API => {
 
           it('has correct address', async () => {
             assert.equal(acManifest.params.contractAddress.indexOf('0x'), 0)
-            assert.equal(acManifest.params.contractAddress, db.access.contract._address)
+            assert.equal(acManifest.params.contractAddress, db.access.address)
           })
         })
 
