@@ -1,10 +1,11 @@
 'use strict'
-const isValidEthAddress = require('./utils/is-valid-eth-address')
+
 const AccessController = require('./access-controller-interface')
+const isValidEthAddress = require('./utils/is-valid-eth-address')
 
-const type = 'eth-contract/cool-contract'
+const type = 'eth-contract/deposit-contract'
 
-class ContractAccessController extends AccessController {
+class DepositContractAccessController extends AccessController {
   constructor(web3, abi, address, defaultAccount) {
     super()
     this.web3 = web3
@@ -27,7 +28,7 @@ class ContractAccessController extends AccessController {
 
   async save () {
     return {
-      contractAddress: this.address,
+      contractAddress: this.contractAddress,
       abi: this.abi
     }
   }
@@ -38,7 +39,7 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${entry.identity.id}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    return await this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
+    return await this.contract.methods.hasPaidDeposit(entry.identity.id).call()
   }
 
   async grant (capability, identifier, options = {}) {
@@ -46,8 +47,13 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${identifier}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    options = Object.assign({}, { from: this.defaultAccount }, options)
-    return await this.contract.methods.grantCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
+    if (capability === 'admin') {
+      //do one thing
+      return Promise.resolve(false)
+    } else if (capability === 'write') {
+      options = Object.assign({}, { from: this.defaultAccount }, options)
+      return await this.contract.methods.payDeposit(identifier).send(options)
+    }
   }
 
   async revoke (capability, identifier, options = {}) {
@@ -55,8 +61,15 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${identifier}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    options = Object.assign({}, { from: this.defaultAccount }, options)
-    return await this.contract.methods.revokeCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
+
+    if (capability === 'admin') {
+      //do one thing
+      return Promise.resolve(false)
+    } else if (capability === 'write') {
+      options = Object.assign({}, { from: this.defaultAccount }, options)
+      return await this.contract.methods.expireDeposit(identifier).send(options)
+    }
+
   }
 
   // Factory
@@ -74,7 +87,7 @@ class ContractAccessController extends AccessController {
       console.warning("WARNING: no defaultAccount set")
     }
 
-    return new ContractAccessController(
+    return new DepositContractAccessController(
       options.web3,
       options.abi,
       options.contractAddress,
@@ -83,4 +96,4 @@ class ContractAccessController extends AccessController {
   }
 }
 
-module.exports = ContractAccessController
+module.exports = DepositContractAccessController
