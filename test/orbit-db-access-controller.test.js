@@ -6,7 +6,9 @@ const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const OrbitDBAccessController = require('../src/orbitdb-access-controller')
+const AccessControllerStore = require('orbit-db-access-controller-store')
 const AccessControllers = require('../')
+const Clock = require('ipfs-log/src/lamport-clock')
 
 // Include test utilities
 const {
@@ -22,11 +24,13 @@ const ipfsPath1 = './orbitdb/tests/orbitdb-access-controller/1/ipfs'
 const ipfsPath2 = './orbitdb/tests/orbitdb-access-controller/2/ipfs'
 
 Object.keys(testAPIs).forEach(API => {
-  describe('orbit-db - OrbitDBAccessController', function() {
+  describe.only('orbit-db - OrbitDBAccessController', function() {
     this.timeout(config.timeout)
 
-    let ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
+    let ipfsd1, ipfsd2, ipfs1, ipfs2
+    let id1, id2, id3, id4, id5
     let orbitdb1, orbitdb2
+    let mockEntry1
 
     before(async () => {
       config.daemon1.repo = ipfsPath1
@@ -43,8 +47,19 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity(keystore1, 'userAA')
-      id2 = await IdentityProvider.createIdentity(keystore2, 'userBB')
+      id1 = await IdentityProvider.createIdentity(keystore1, 'userA')
+      id2 = await IdentityProvider.createIdentity(keystore2, 'userB')
+      id3 = await IdentityProvider.createIdentity(keystore1, 'userC')
+      id4 = await IdentityProvider.createIdentity(keystore2, 'userAA')
+      id5 = await IdentityProvider.createIdentity(keystore1, 'userBB')
+
+      mockEntry1 = { 
+        identity: id1,
+        clock: new Clock(id1.publicKey, 1) 
+      }
+
+      // Add the AC store to orbitdb's databases
+      OrbitDB.addDatabaseType('access-controller', AccessControllerStore)
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
@@ -116,7 +131,7 @@ Object.keys(testAPIs).forEach(API => {
           // ...
           // doesn't matter what we put here, only identity is used for the check
         }
-        const canAppend = await accessController.canAppend(mockEntry, id1.provider)
+        const canAppend = await accessController.canAppend(mockEntry1, id1.provider)
         assert.equal(canAppend, true)
       })
     })
@@ -136,9 +151,9 @@ Object.keys(testAPIs).forEach(API => {
 
       it('adds a capability', async () => {
         try {
-          await accessController.grant('write', id1.publicKey)
+          await accessController.grant('write', id1, { after: mockEntry1 })
         } catch (e) {
-          assert(e, null)
+          assert.equal(e, null)
         }
         assert.deepEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey]),
@@ -148,17 +163,15 @@ Object.keys(testAPIs).forEach(API => {
 
       it('adds more capabilities', async () => {
         try {
-          await accessController.grant('read', 'ABCD')
-          await accessController.grant('delete', 'ABCD')
+          await accessController.grant('read', id4, { after: mockEntry1 })
+          await accessController.grant('delete', id4, { after: mockEntry1 })
         } catch (e) {
           assert.equal(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey]),
-          write: new Set([id1.publicKey]),
-          read: new Set(['ABCD']),
-          delete: new Set(['ABCD'])
-        })
+        assert.deepEqual(accessController.capabilities.admin, new Set([id1.publicKey]))
+        assert.deepEqual(accessController.capabilities.write, new Set([id1.publicKey]))
+        assert.deepEqual(accessController.capabilities.read, new Set([id4.publicKey]))
+        assert.deepEqual(accessController.capabilities.delete, new Set([id4.publicKey]))
       })
 
       it('emit \'updated\' event when a capability was added', async () => {
@@ -168,33 +181,35 @@ Object.keys(testAPIs).forEach(API => {
               assert.deepEqual(accessController.capabilities, {
                 admin: new Set([id1.publicKey]),
                 write: new Set([id1.publicKey]),
-                read: new Set(['ABCD', 'AXES']),
-                delete: new Set(['ABCD'])
+                read: new Set([id4.publicKey]),
+                delete: new Set([id4.publicKey])
               })
               resolve()
             } catch (e) {
               reject(e)
             }
           })
-          await accessController.grant('read', 'AXES')
+          await accessController.grant('read', id4, { after: mockEntry1 })
         })
       })
 
       it('can append after acquiring capability', async () => {
         try {
-          await accessController.grant('write', id1.publicKey)
-          await accessController.grant('write', id2.publicKey)
+          await accessController.grant('write', id1, { after: mockEntry1 })
+          await accessController.grant('write', id2, { after: mockEntry1 })
         } catch (e) {
-          assert(e, null)
+          assert.equal(e, null)
         }
-        const mockEntry1 = {
+        const entry1 = {
           identity: id1,
+          clock: new Clock(id1.publicKey, 2)
         }
-        const mockEntry2 = {
+        const entry2 = {
           identity: id2,
+          clock: new Clock(id2.publicKey, 2)
         }
-        const canAppend1 = await accessController.canAppend(mockEntry1, id1.provider)
-        const canAppend2 = await accessController.canAppend(mockEntry2, id2.provider)
+        const canAppend1 = await accessController.canAppend(entry1, id1.provider)
+        const canAppend2 = await accessController.canAppend(entry2, id2.provider)
         assert.equal(canAppend1, true)
         assert.equal(canAppend2, true)
       })
@@ -203,16 +218,16 @@ Object.keys(testAPIs).forEach(API => {
     describe('revoke', function () {
       let accessController
 
-      before(async () => {
+      beforeEach(async () => {
         accessController = new OrbitDBAccessController(orbitdb1)
-        await accessController.load('testdb/remove')
+        await accessController.load('testdb/remove/' + new Date().getTime())
       })
 
       it('removes a capability', async () => {
         try {
-          await accessController.grant('write', id1.publicKey)
-          await accessController.grant('write', 'AABB')
-          await accessController.revoke('write', 'AABB')
+          await accessController.grant('write', id1, { after: mockEntry1 })
+          await accessController.grant('write', id4, { after: mockEntry1 })
+          await accessController.revoke('write', id4, { after: mockEntry1 })
         } catch (e) {
           assert.equal(e, null)
         }
@@ -224,7 +239,7 @@ Object.keys(testAPIs).forEach(API => {
 
       it('can remove the creator\'s write access', async () => {
         try {
-          await accessController.revoke('write', id1.publicKey)
+          await accessController.revoke('write', id1, { after: mockEntry1 })
         } catch (e) {
           assert.equal(e, null)
         }
@@ -235,7 +250,7 @@ Object.keys(testAPIs).forEach(API => {
 
       it('can\'t remove the creator\'s admin access', async () => {
         try {
-          await accessController.revoke('admin', id1.publicKey)
+          await accessController.revoke('admin', id1, { after: mockEntry1 })
         } catch (e) {
           assert.equal(e, null)
         }
@@ -246,60 +261,57 @@ Object.keys(testAPIs).forEach(API => {
 
       it('removes more capabilities', async () => {
         try {
-          await accessController.grant('read', 'ABCD')
-          await accessController.grant('delete', 'ABCD')
-          await accessController.grant('write', id1.publicKey)
-          await accessController.revoke('read', 'ABCDE')
-          await accessController.revoke('delete', 'ABCDE')
+          await accessController.grant('read', id4, { after: mockEntry1 })
+          await accessController.grant('delete', id4, { after: mockEntry1 })
+          await accessController.grant('write', id1, { after: mockEntry1 })
+          await accessController.revoke('read', id4, { after: mockEntry1 })
+          await accessController.revoke('delete', id4, { after: mockEntry1 })
         } catch (e) {
           assert.equal(e, null)
         }
         assert.deepEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey]),
-          delete: new Set(['ABCD']),
-          read: new Set(['ABCD']),
           write: new Set([id1.publicKey])
         })
       })
 
       it('can\'t append after revoking capability', async () => {
         try {
-          await accessController.grant('write', id2.publicKey)
-          await accessController.revoke('write', id2.publicKey)
+          await accessController.grant('write', id2, { after: mockEntry1 })
+          await accessController.revoke('write', id2, { after: mockEntry1 })
         } catch (e) {
-          assert(e, null)
+          assert.equal(e, null)
         }
-        const mockEntry1 = {
-          identity: id1
+        const entry1 = {
+          identity: id1,
+          clock: new Clock(id1.publicKey, 2)
         }
-        const mockEntry2 = {
-          identity: id2
+        const entry2 = {
+          identity: id2,
+          clock: new Clock(id1.publicKey, 2)
         }
-        const canAppend = await accessController.canAppend(mockEntry1, id1.provider)
-        const noAppend = await accessController.canAppend(mockEntry2, id2.provider)
+        const canAppend = await accessController.canAppend(entry1, id1.provider)
+        const noAppend = await accessController.canAppend(entry2, id2.provider)
         assert.equal(canAppend, true)
         assert.equal(noAppend, false)
       })
 
       it('emits \'updated\' event when a capability was removed', async () => {
-        await accessController.grant('admin', 'cats')
-        await accessController.grant('admin', 'dogs')
+        await accessController.grant('admin', id1, { after: mockEntry1 })
+        await accessController.grant('admin', id2, { after: mockEntry1 })
 
         return new Promise(async (resolve, reject) => {
           accessController.on('updated', () => {
             try {
               assert.deepEqual(accessController.capabilities, {
-                admin: new Set([id1.publicKey, 'dogs']),
-                delete: new Set(['ABCD']),
-                read: new Set(['ABCD']),
-                write: new Set([id1.publicKey])
+                admin: new Set([id1.publicKey]),
               })
               resolve()
             } catch (e) {
               reject(e)
             }
           })
-          await accessController.revoke('admin', 'cats')
+          await accessController.revoke('admin', id2, { after: mockEntry1 })
         })
       })
     })
@@ -311,14 +323,15 @@ Object.keys(testAPIs).forEach(API => {
         dbName = 'testdb-load-' + new Date().getTime()
         accessController = new OrbitDBAccessController(orbitdb1)
         await accessController.load(dbName)
-        await accessController.grant('write', 'A')
-        await accessController.grant('write', 'B')
-        await accessController.grant('write', 'C')
-        await accessController.grant('write', 'C') // double entry
-        await accessController.grant('another', 'AA')
-        await accessController.grant('another', 'BB')
-        await accessController.revoke('another', 'AA')
-        await accessController.grant('admin', id1.publicKey)
+        await accessController.grant('write', id1, { after: mockEntry1 })
+        await accessController.grant('write', id2, { after: mockEntry1 })
+        await accessController.grant('write', id3, { after: mockEntry1 })
+        await accessController.grant('write', id3, { after: mockEntry1 }) // double entry
+        await accessController.revoke('write', id3, { after: mockEntry1 })
+        await accessController.grant('another', id4, { after: mockEntry1 })
+        await accessController.grant('another', id5, { after: mockEntry1 })
+        await accessController.revoke('another', id4, { after: mockEntry1 })
+        await accessController.grant('admin', id1, { after: mockEntry1 })
         return new Promise(async (resolve) => {
           // Test that the access controller emits 'updated' after it was loaded
           accessController.on('updated', () => resolve())
@@ -334,8 +347,8 @@ Object.keys(testAPIs).forEach(API => {
 
       it('has correct capabalities', async () => {
         assert.deepEqual(accessController.get('admin'), new Set([id1.publicKey]))
-        assert.deepEqual(accessController.get('write'), new Set(['A', 'B', 'C']))
-        assert.deepEqual(accessController.get('another'), new Set(['BB']))
+        assert.deepEqual(accessController.get('write'), new Set([id1.publicKey, id2.publicKey]))
+        assert.deepEqual(accessController.get('another'), new Set([id5.publicKey]))
       })
     })
   })
