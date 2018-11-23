@@ -3,6 +3,7 @@
 const pMapSeries = require('p-map-series')
 const AccessController = require('./access-controller-interface')
 const ensureAddress = require('./utils/ensure-ac-address')
+const Clock = require('ipfs-log/src/lamport-clock')
 
 const type = 'orbitdb'
 
@@ -24,16 +25,9 @@ class OrbitDBAccessController extends AccessController {
 
   // Return true if entry is allowed to be added to the database
   async canAppend (entry, identityProvider) {
-    // Write keys and admins keys are allowed
-    const access = new Set([...this.get('write'), ...this.get('admin')])
-    // If the ACL contains the writer's public key or it contains '*'
-    if (access.has(entry.identity.publicKey) || access.has('*')) {
-      const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
-      // Allow access if identity verifies
-      return verifiedIdentity
-    }
-
-    return false
+    return (await this._db.hasAccessForEntry('write', entry) === true) ||
+      (await this._db.hasAccessForEntry('admin', entry) === true) ||
+      (await this._db.hasAccessForEntry('*', entry) === true)
   }
 
   get capabilities () {
@@ -73,7 +67,9 @@ class OrbitDBAccessController extends AccessController {
       await this._db.close()
 
     // Force '<address>/_access' naming for the database
-    this._db = await this._orbitdb.keyvalue(ensureAddress(address), {
+    this._db = await this._orbitdb.open(ensureAddress(address), {
+      type: 'access-controller',
+      create: true,
       // use ipfs controller as a immutable "root controller"
       accessController: {
         type: 'ipfs',
@@ -96,20 +92,12 @@ class OrbitDBAccessController extends AccessController {
     }
   }
 
-  async grant (capability, key) {
-    // Merge current keys with the new key
-    const capabilities = new Set([...(this._db.get(capability) || []), ...[key]])
-    await this._db.put(capability, Array.from(capabilities.values()))
+  async grant (capability, identity, options = {}) {
+    return await this._db.grant(capability, identity, options.after)
   }
 
-  async revoke (capability, key) {
-    let capabilities = new Set(this._db.get(capability) || [])
-    capabilities.delete(key)
-    if (capabilities.size > 0) {
-      await this._db.put(capability, Array.from(capabilities.values()))
-    } else {
-      await this._db.del(capability)
-    }
+  async revoke (capability, identity, options = {}) {
+    return await this._db.revoke(capability, identity, options.after)
   }
 
   /* Private methods */
@@ -122,9 +110,15 @@ class OrbitDBAccessController extends AccessController {
     const ac = new OrbitDBAccessController(orbitdb, options)
     await ac.load(options.address || 'default-access-controller')
 
+    const mockEntry1 = { 
+      identity: orbitdb.identity,
+      clock: new Clock(orbitdb.identity.publicKey, 0) 
+    }
+
     // Add write access from options
     if (options.write && !options.address) {
-      await pMapSeries(options.write, async (e) => await ac.grant('write', e))
+      // TODO: how to deal with the initial access rights?
+      await pMapSeries(options.write, async (e) => await ac.grant('write', e, { after: mockEntry1 }))
     }
 
     return ac
