@@ -5,6 +5,7 @@ const mapSeries = require('p-map-series')
 const rmrf = require('rimraf')
 const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
+const EthIdentityProvider = require('orbit-db-identity-provider/src/ethereum-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const ContractAccessController = require('../src/contract-access-controller')
 const DepositContractAccessController = require('../src/deposit-contract-access-controller')
@@ -60,19 +61,13 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      let wallet1 = await open({
-        privateKey: '0x3141592653589793238462643383279502884197169399375105820974944592'
-      })
+      let wallet1 = await EthIdentityProvider.createWallet()
+      let wallet2 = await EthIdentityProvider.createWallet()
 
-      let wallet2 = await open({
-        privateKey: '0x2141592653589793238462643383279502884197169399375105820974944592'
-      })
+      IdentityProvider.addIdentityProvider(EthIdentityProvider)
 
-      const signer1 = async (id, data) => { return await wallet1.signMessage({ message: data }) }
-      const signer2 = async (id, data) => { return await wallet2.signMessage({ message: data }) }
-
-      id1 = await IdentityProvider.createIdentity(keystore1, wallet1.address, { type: 'ethers', identitySignerFn: signer1 })
-      id2 = await IdentityProvider.createIdentity(keystore2, wallet2.address, { type: 'ethers', identitySignerFn: signer2 })
+      id1 = await IdentityProvider.createIdentity({ type: EthIdentityProvider.type, keystore: keystore1, wallet: wallet1 })
+      id2 = await IdentityProvider.createIdentity({ type: EthIdentityProvider.type, keystore: keystore2, wallet: wallet2 })
 
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
@@ -147,11 +142,11 @@ Object.keys(testAPIs).forEach(API => {
         })
 
         it('grants access to multiple keys', async () => {
-          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
-          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
+          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
+          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
 
           await accessController.grant('write', orbitdb2.identity.id)
-          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity })
+          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
 
           assert.equal(canAppend1, true)
           assert.equal(canAppend2, false)
@@ -184,9 +179,9 @@ Object.keys(testAPIs).forEach(API => {
           })
 
           it('has correct capabalities', async () => {
-            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
-            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
-            const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} })
+            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
+            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
+            const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} }, orbitdb1.identity.provider)
 
             assert.equal(canAppend1, true)
             assert.equal(canAppend2, true)

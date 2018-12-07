@@ -47,8 +47,8 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity(keystore1, 'userAA')
-      id2 = await IdentityProvider.createIdentity(keystore2, 'userBB')
+      id1 = await IdentityProvider.createIdentity({ ipfs: ipfs1, keystore1})
+      id2 = await IdentityProvider.createIdentity({ ipfs: ipfs2, keystore2})
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,

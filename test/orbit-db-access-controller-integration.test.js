@@ -42,8 +42,8 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity(keystore1, 'userAA')
-      id2 = await IdentityProvider.createIdentity(keystore2, 'userBB')
+      id1 = await IdentityProvider.createIdentity({ ipfs: ipfs1, keystore: keystore1})
+      id2 = await IdentityProvider.createIdentity({ ipfs: ipfs2, keystore: keystore2})
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
@@ -155,7 +155,7 @@ Object.keys(testAPIs).forEach(API => {
             err = e
           }
 
-          assert.equal(err, 'Error: Could not append entry, key "userBB" is not allowed to write to the log')
+          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
 
           const doChanges = () => {
             return new Promise(async (resolve, reject) => {
@@ -191,7 +191,7 @@ Object.keys(testAPIs).forEach(API => {
           } catch (e) {
             err = e
           }
-          assert.equal(err, 'Error: Could not append entry, key "userBB" is not allowed to write to the log')
+          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
 
         it('can\'t revoke access if doesn\'t have write access', async () => {
@@ -201,7 +201,7 @@ Object.keys(testAPIs).forEach(API => {
           } catch (e) {
             err = e
           }
-          assert.equal(err, 'Error: Could not append entry, key "userBB" is not allowed to write to the log')
+          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
 
         it('revoking access disables ability to write to the database', async () => {
@@ -227,7 +227,7 @@ Object.keys(testAPIs).forEach(API => {
             })
           }
           const err = await getError()
-          assert.equal(err, 'Error: Could not append entry, key "userBB" is not allowed to write to the log')
+          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
       })
     })

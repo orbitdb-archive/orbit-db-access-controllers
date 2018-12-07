@@ -43,16 +43,16 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity(keystore1, 'userAA')
-      id2 = await IdentityProvider.createIdentity(keystore2, 'userBB')
+      id1 = await IdentityProvider.createIdentity({ ipfs: ipfs1, keystore: keystore1})
+      id2 = await IdentityProvider.createIdentity({ ipfs: ipfs2, keystore: keystore2})
 
-      orbitdb1 = await OrbitDB.createInstance(ipfs1, { 
+      orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
-      orbitdb2 = await OrbitDB.createInstance(ipfs2, { 
+      orbitdb2 = await OrbitDB.createInstance(ipfs2, {
         ACFactory: AccessControllers,
         directory: dbPath2,
         identity: id2
@@ -159,7 +159,7 @@ Object.keys(testAPIs).forEach(API => {
           }
 
           const res = await db2.iterator().collect().map(e => e.payload.value)
-          assert.equal(err, 'Error: Could not append entry, key "userBB" is not allowed to write to the log')
+          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
           assert.deepEqual(res.includes(e => e === 'hello!!'), false)
         })
       })
