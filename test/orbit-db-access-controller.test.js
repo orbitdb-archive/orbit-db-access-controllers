@@ -116,7 +116,7 @@ Object.keys(testAPIs).forEach(API => {
           // ...
           // doesn't matter what we put here, only identity is used for the check
         }
-        const canAppend = await accessController.canAppend(mockEntry, id1.provider)
+        const canAppend = await accessController.canAppend(mockEntry)
         assert.equal(canAppend, true)
       })
     })
@@ -193,8 +193,8 @@ Object.keys(testAPIs).forEach(API => {
         const mockEntry2 = {
           identity: id2,
         }
-        const canAppend1 = await accessController.canAppend(mockEntry1, id1.provider)
-        const canAppend2 = await accessController.canAppend(mockEntry2, id2.provider)
+        const canAppend1 = await accessController.canAppend(mockEntry1)
+        const canAppend2 = await accessController.canAppend(mockEntry2)
         assert.equal(canAppend1, true)
         assert.equal(canAppend2, true)
       })
@@ -275,8 +275,8 @@ Object.keys(testAPIs).forEach(API => {
         const mockEntry2 = {
           identity: id2
         }
-        const canAppend = await accessController.canAppend(mockEntry1, id1.provider)
-        const noAppend = await accessController.canAppend(mockEntry2, id2.provider)
+        const canAppend = await accessController.canAppend(mockEntry1)
+        const noAppend = await accessController.canAppend(mockEntry2)
         assert.equal(canAppend, true)
         assert.equal(noAppend, false)
       })

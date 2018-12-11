@@ -112,7 +112,7 @@ Object.keys(testAPIs).forEach(API => {
           // ...
           // doesn't matter what we put here, only identity is used for the check
         }
-        const canAppend = await accessController.canAppend(mockEntry, id1.provider)
+        const canAppend = await accessController.canAppend(mockEntry)
         assert.equal(canAppend, true)
       })
     })

@@ -137,16 +137,16 @@ Object.keys(testAPIs).forEach(API => {
             // doesn't matter what we put here, only identity is used for the check
           }
           await accessController.grant('write', id1.id)
-          const canAppend = await accessController.canAppend(mockEntry, id1.provider)
+          const canAppend = await accessController.canAppend(mockEntry)
           assert.equal(canAppend, true)
         })
 
         it('grants access to multiple keys', async () => {
-          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
-          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
+          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
+          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
 
           await accessController.grant('write', orbitdb2.identity.id)
-          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
+          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity })
 
           assert.equal(canAppend1, true)
           assert.equal(canAppend2, false)
@@ -179,9 +179,9 @@ Object.keys(testAPIs).forEach(API => {
           })
 
           it('has correct capabalities', async () => {
-            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
-            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
-            const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} }, orbitdb1.identity.provider)
+            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
+            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
+            const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} })
 
             assert.equal(canAppend1, true)
             assert.equal(canAppend2, true)

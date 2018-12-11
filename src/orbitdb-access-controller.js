@@ -23,14 +23,12 @@ class OrbitDBAccessController extends AccessController {
   }
 
   // Return true if entry is allowed to be added to the database
-  async canAppend (entry, identityProvider) {
+  async canAppend (entry) {
     // Write keys and admins keys are allowed
     const access = new Set([...this.get('write'), ...this.get('admin')])
     // If the ACL contains the writer's public key or it contains '*'
     if (access.has(entry.identity.publicKey) || access.has('*')) {
-      const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
-      // Allow access if identity verifies
-      return verifiedIdentity
+      return true
     }
 
     return false
@@ -49,7 +47,7 @@ class OrbitDBAccessController extends AccessController {
       // and make sure all values are Sets
       Object.entries({
         ...capabilities,
-        // Add the root access controller's 'write' access list 
+        // Add the root access controller's 'write' access list
         // as admins on this controller
         ...{ admin: new Set([...(capabilities.admin || []), ...this._db.access.write])
         }
