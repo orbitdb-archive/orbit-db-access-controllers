@@ -69,7 +69,6 @@ Object.keys(testAPIs).forEach(API => {
 
       id1 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore1, wallet: wallet1 })
       id2 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore2, wallet: wallet2 })
-      console.log("ID1",id1.id, "wallet", wallet1.address)
 
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
