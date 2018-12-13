@@ -59,16 +59,10 @@ Object.keys(testAPIs).forEach(API => {
 
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
-      //
-      // const wallet1 = await open({ privateKey: '0x3141592653589793238462643383279502884197169399375105820974944592' })
-      // const wallet2 = await open({ privateKey: '0x2141592653589793238462643383279502884197169399375105820974944592' })
-
-      const wallet1 = await EthIdentityProvider.createWallet()
-      const wallet2 = await EthIdentityProvider.createWallet()
       IdentityProvider.addIdentityProvider(EthIdentityProvider)
 
-      id1 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore1, wallet: wallet1 })
-      id2 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore2, wallet: wallet2 })
+      id1 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore1 })
+      id2 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore2 })
 
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
