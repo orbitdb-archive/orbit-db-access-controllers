@@ -21,11 +21,9 @@ class IPFSAccessController extends AccessController {
 
   async canAppend(entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
-    if (this.write.includes(entry.identity.publicKey) || 
+    if (this.write.includes(entry.identity.publicKey) ||
       this.write.includes('*')) {
-      const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
-      // Allow access if identity verifies
-      return verifiedIdentity
+      return true
     }
     return false
   }

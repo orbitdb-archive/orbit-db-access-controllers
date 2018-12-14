@@ -4,6 +4,7 @@ const assert = require('assert')
 const rmrf = require('rimraf')
 const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
+const EthIdentityProvider = require('orbit-db-identity-provider/src/ethereum-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
 const ContractAccessController = require('../src/contract-access-controller')
@@ -58,15 +59,10 @@ Object.keys(testAPIs).forEach(API => {
 
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
+      IdentityProvider.addIdentityProvider(EthIdentityProvider)
 
-      const wallet1 = await open({ privateKey: '0x3141592653589793238462643383279502884197169399375105820974944592' })
-      const wallet2 = await open({ privateKey: '0x2141592653589793238462643383279502884197169399375105820974944592' })
-
-      const signer1 = async (id, data) => await wallet1.signMessage({ message: data })
-      const signer2 = async (id, data) => await wallet2.signMessage({ message: data })
-
-      id1 = await IdentityProvider.createIdentity(keystore1, wallet1.address, { type: 'ethers', identitySignerFn: signer1 })
-      id2 = await IdentityProvider.createIdentity(keystore2, wallet2.address, { type: 'ethers', identitySignerFn: signer2 })
+      id1 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore1 })
+      id2 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore2 })
 
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
@@ -225,19 +221,19 @@ Object.keys(testAPIs).forEach(API => {
 
           it('can\'t grant access if not admin', async () => {
             await db2.access.grant('write', id2.id)
-            const canAppend = await db2.access.canAppend( { identity: id2 })
+            const canAppend = await db2.access.canAppend( { identity: id2 }, id2.provider)
             assert.equal(canAppend, false)
           })
 
           it('can\'t revoke access if not admin', async () => {
             await db2.access.revoke('write', id1.id)
-            const canAppend = await db2.access.canAppend( { identity: id1 })
+            const canAppend = await db2.access.canAppend( { identity: id1 }, id1.provider)
             assert.equal(canAppend, true)
           })
 
           it('can check permissions without defaultAccount set', async () => {
             db2.access.defaultAccount = null
-            const canAppend = await db2.access.canAppend( { identity: id1 })
+            const canAppend = await db2.access.canAppend( { identity: id1 }, id1.provider)
             assert.equal(canAppend, true)
           })
 
@@ -261,7 +257,7 @@ Object.keys(testAPIs).forEach(API => {
               err = e
             }
             assert.equal(err, null)
-            const canAppend = await db2.access.canAppend( { identity: id2 })
+            const canAppend = await db2.access.canAppend( { identity: id2 }, id2.provider)
             assert.equal(canAppend, true)
           })
 
