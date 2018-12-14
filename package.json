@@ -26,8 +26,8 @@
     "ipfsd-ctl": "~0.37.5",
     "mocha": "^5.2.0",
     "orbit-db": "https://github.com/orbitdb/orbit-db#orbit-db-access-controller",
-    "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider#feat/resolvers",
-    "orbit-db-keystore": "github:orbitdb/orbit-db-keystore#fix/static-verification",
+    "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider",
+    "orbit-db-keystore": "github:orbitdb/orbit-db-keystore",
     "p-map-series": "^1.0.0",
     "web3": "~1.0.0-beta.36"
   }
