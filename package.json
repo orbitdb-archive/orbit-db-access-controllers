@@ -1,7 +1,11 @@
 {
   "name": "orbit-db-access-controllers",
   "version": "0.0.1",
-  "description": "Access Controller for OrbitDB",
+  "description": "Access Controllers for OrbitDB",
+  "keywords": [
+    "orbit",
+    "orbitdb"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "TEST=all mocha"
