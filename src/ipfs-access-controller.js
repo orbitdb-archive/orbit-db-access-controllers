@@ -1,7 +1,6 @@
 'use strict'
 
 const AccessController = require('./access-controller-interface')
-
 const type = 'ipfs'
 
 class IPFSAccessController extends AccessController {
@@ -35,8 +34,8 @@ class IPFSAccessController extends AccessController {
       address = address.split('/')[2]
 
     try {
-      const dag = await this._ipfs.object.get(address)
-      this._write = JSON.parse(dag.toJSON().data)
+      const dag = await this._ipfs.dag.get(address)
+      this._write = JSON.parse(dag.value)
     } catch (e) {
       console.log("IPFSAccessController.load ERROR:", e)
     }
@@ -46,8 +45,8 @@ class IPFSAccessController extends AccessController {
     let hash
     try {
       const access = JSON.stringify(this.write, null, 2)
-      const dag = await this._ipfs.object.put(Buffer.from(access))
-      hash = dag.toJSON().multihash.toString()
+      const dag = await this._ipfs.dag.put(Buffer.from(access))
+      hash = dag.toBaseEncodedString()
     } catch (e) {
       console.log("IPFSAccessController.save ERROR:", e)
     }

@@ -138,11 +138,11 @@ Object.keys(testAPIs).forEach(API => {
 
           await db2.load()
 
-          dag = await ipfs1.object.get(db.address.root)
-          dbManifest = JSON.parse(dag.toJSON().data)
+          dag = await ipfs1.dag.get(db.address.root)
+          dbManifest = JSON.parse(dag.value.toJSON().data)
           const hash = dbManifest.accessController.split('/').pop()
-          const acManifestDag = await ipfs1.object.get(hash)
-          acManifest = JSON.parse(acManifestDag.toJSON().data)
+          const acManifestDag = await ipfs1.dag.get(hash)
+          acManifest = JSON.parse(acManifestDag.value)
         })
 
         it('makes database use the correct access controller', async () => {
