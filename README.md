@@ -2,10 +2,6 @@
 
 > Access Controllers for OrbitDB
 
-
-[![npm version](https://badge.fury.io/js/orbit-db-access-controllers.svg)](https://www.npmjs.com/package/orbit-db-access-controllers)
-[![node](https://img.shields.io/node/v/orbit-db-access-controllers.svg)](https://www.npmjs.com/package/orbit-db-access-controllers)
-
 ## Install
 
 This project uses [npm](http://npmjs.com/) and [nodejs](https://nodejs.org/).
