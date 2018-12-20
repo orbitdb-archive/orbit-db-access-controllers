@@ -40,7 +40,7 @@ const orbitdb = await OrbitDB.createInstance(ipfs, {
 const db = await orbitdb.keyvalue('first-database', {
   accessController: {
     type: 'othertype',
-    write: [identity1.publicKey]
+    write: [identity.publicKey]
   }
 })
 ```
