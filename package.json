@@ -16,6 +16,9 @@
     "url": "https://github.com/orbitdb/orbit-db-access-controllers/issues"
   },
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
+  "dependencies": {
+    "p-map-series": "^1.0.0",
+  },
   "devDependencies": {
     "@colony/purser-software": "^1.1.2",
     "datastore-level": "~0.10.0",
@@ -28,7 +31,6 @@
     "orbit-db": "https://github.com/orbitdb/orbit-db#orbit-db-access-controller",
     "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider",
     "orbit-db-keystore": "github:orbitdb/orbit-db-keystore",
-    "p-map-series": "^1.0.0",
     "web3": "~1.0.0-beta.36"
   }
 }
