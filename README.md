@@ -17,18 +17,16 @@ You can create a custom access controller by implementing the `AccessController`
 ```javascript
 class OtherAccessController extends AccessController {
 
-    static get type () { return 'othertype' } // Return the type for this controller
+  static get type () { return 'othertype' } // Return the type for this controller
 
-    async canAppend(entry, identityProvider) {
-      // logic to determine if entry can be added, for example:
-      if (entry.payload === "hello world" &&
-          entry.identity.id === identity.id &&
-          identityProvider.verifyIdentity(entry.identity))
-        return true
+  async canAppend(entry, identityProvider) {
+    // logic to determine if entry can be added, for example:
+    if (entry.payload === "hello world" && entry.identity.id === identity.id && identityProvider.verifyIdentity(entry.identity))
+      return true
 
-      return false
-     }
-    async grant (access, identity) {} // Logic for granting access to identity
+    return false
+  }
+  async grant (access, identity) {} // Logic for granting access to identity
 }
 
 let AccessControllers = require('orbit-db-access-controllers')
