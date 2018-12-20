@@ -10,12 +10,39 @@ This project uses [npm](http://npmjs.com/) and [nodejs](https://nodejs.org/).
 npm i orbit-db-access-controllers
 ```
 
-## Usage
+#### Creating a custom Access Controller
 
-```js
-// Fill out with actual use case
-let orbit-db-access-controllers = require('orbit-db-access-controllers')
-orbit-db-access-controllers.useMe()
+You can create a custom access controller by implementing the `AccessController` [interface](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/access-controller-interface.js) and adding it to the AccessControllers object before passing it to OrbitDB. For more detailed examples, see the implementation of the [Ethereum Contract Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/contract-access-controller.js) and [OrbitDB Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/orbitdb-access-controller.js).
+
+```javascript
+class OtherAccessController extends AccessController {
+
+    static get type () { return 'othertype' } // Return the type for this controller
+
+    async canAppend(entry, identityProvider) {
+      // logic to determine if entry can be added, for example:
+      if (entry.payload === "hello world" && entry.identity.id === identity.id && identityProvider.verifyIdentity(entry.identity))
+        return true
+
+      return false
+      }
+
+    async grant (access, identity) {} // Logic for granting access to identity
+}
+
+let AccessControllers = require('orbit-db-access-controllers')
+AccessControllers.addAccessController({ AccessController: OtherAccessController })
+
+const orbitdb = await OrbitDB.createInstance(ipfs, {
+  AccessControllers: AccessControllers
+})
+
+const db = await orbitdb.keyvalue('first-database', {
+  accessController: {
+    type: 'othertype',
+    write: [identity.publicKey]
+  }
+})
 ```
 
 ## Contribute
