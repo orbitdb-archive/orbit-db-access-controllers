@@ -10,6 +10,8 @@ This project uses [npm](http://npmjs.com/) and [nodejs](https://nodejs.org/).
 npm i orbit-db-access-controllers
 ```
 
+## Usage
+
 #### Creating a custom Access Controller
 
 You can create a custom access controller by implementing the `AccessController` [interface](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/access-controller-interface.js) and adding it to the AccessControllers object before passing it to OrbitDB. For more detailed examples, see the implementation of the [Ethereum Contract Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/contract-access-controller.js) and [OrbitDB Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/orbitdb-access-controller.js).
