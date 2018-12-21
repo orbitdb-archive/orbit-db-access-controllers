@@ -101,47 +101,47 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('has the correct access rights after creating the database', async () => {
-        assert.deepEqual(db.access.capabilities, {
+        assert.deepStrictEqual(db.access.capabilities, {
           admin: new Set([id1.publicKey]),
           write: new Set([id1.publicKey])
         })
       })
 
       it('makes database use the correct access controller', async () => {
-        assert.equal(acManifest.params.address, db.access._db.address)
+        assert.strictEqual(acManifest.params.address, db.access._db.address)
       })
 
       it('saves database manifest file locally', async () => {
-        assert.notEqual(dbManifest, null)
+        assert.notStrictEqual(dbManifest, null)
       })
 
       it('saves access controller manifest file locally', async () => {
-        assert.notEqual(acManifest, null)
+        assert.notStrictEqual(acManifest, null)
       })
 
       describe('database manifest', () => {
         it('has correct name', async () => {
-          assert.equal(dbManifest.name, 'AABB')
+          assert.strictEqual(dbManifest.name, 'AABB')
         })
 
         it('has correct type', async () => {
-          assert.equal(dbManifest.type, 'feed')
+          assert.strictEqual(dbManifest.type, 'feed')
         })
 
         it('has correct address', async () => {
-          assert.notEqual(dbManifest.accessController, null)
-          assert.equal(dbManifest.accessController.indexOf('/ipfs'), 0)
+          assert.notStrictEqual(dbManifest.accessController, null)
+          assert.strictEqual(dbManifest.accessController.indexOf('/ipfs'), 0)
         })
       })
 
       describe('access controller manifest', () => {
         it('has correct type', async () => {
-          assert.equal(acManifest.type, 'orbitdb')
+          assert.strictEqual(acManifest.type, 'orbitdb')
         })
 
         it('has correct address', async () => {
-          assert.equal(acManifest.params.address.indexOf('/orbitdb'), 0)
-          assert.equal(acManifest.params.address.split('/').pop(), '_access')
+          assert.strictEqual(acManifest.params.address.indexOf('/orbitdb'), 0)
+          assert.strictEqual(acManifest.params.address.split('/').pop(), '_access')
         })
       })
 
@@ -150,12 +150,12 @@ Object.keys(testAPIs).forEach(API => {
           let err
           try {
             await db2.add('hello?')
-            assert.equal('Should not end here', false)
+            assert.strictEqual('Should not end here', false)
           } catch (e) {
             err = e
           }
 
-          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
 
           const doChanges = () => {
             return new Promise(async (resolve, reject) => {
@@ -180,8 +180,8 @@ Object.keys(testAPIs).forEach(API => {
           await doChanges()
           const res1 = await db.iterator().collect().map(e => e.payload.value)
           const res2 = await db2.iterator().collect().map(e => e.payload.value)
-          assert.deepEqual(res1, ['hello!'])
-          assert.deepEqual(res2, ['hello!'])
+          assert.deepStrictEqual(res1, ['hello!'])
+          assert.deepStrictEqual(res2, ['hello!'])
         })
 
         it('can\'t grant access if doesn\'t have write access', async () => {
@@ -191,7 +191,7 @@ Object.keys(testAPIs).forEach(API => {
           } catch (e) {
             err = e
           }
-          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
 
         it('can\'t revoke access if doesn\'t have write access', async () => {
@@ -201,7 +201,7 @@ Object.keys(testAPIs).forEach(API => {
           } catch (e) {
             err = e
           }
-          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
 
         it('revoking access disables ability to write to the database', async () => {
@@ -227,7 +227,7 @@ Object.keys(testAPIs).forEach(API => {
             })
           }
           const err = await getError()
-          assert.equal(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
       })
     })

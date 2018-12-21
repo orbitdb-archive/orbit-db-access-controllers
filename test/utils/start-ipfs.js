@@ -23,8 +23,8 @@ const startIpfs = (type, config = {}) => {
     IPFSFactory
       .create(testAPIs[type])
       .spawn(config, async (err, ipfsd) => {
-        if (err) { 
-          reject(err) 
+        if (err) {
+          reject(err)
         }
 
         // Monkey patch _peerInfo to the ipfs api/instance

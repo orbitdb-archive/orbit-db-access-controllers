@@ -8,7 +8,8 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "TEST=all mocha"
+    "test": "TEST=all mocha",
+    "lint": "standard"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,12 @@
     "orbit-db": "https://github.com/orbitdb/orbit-db#orbit-db-access-controller",
     "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider",
     "orbit-db-keystore": "github:orbitdb/orbit-db-keystore",
+    "standard": "^12.0.1",
     "web3": "~1.0.0-beta.36"
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
   }
 }

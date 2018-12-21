@@ -13,7 +13,7 @@ const {
   config,
   startIpfs,
   stopIpfs,
-  testAPIs,
+  testAPIs
 } = require('./utils')
 
 const dbPath1 = './orbitdb/tests/orbitdb-access-controller/1'
@@ -22,7 +22,7 @@ const ipfsPath1 = './orbitdb/tests/orbitdb-access-controller/1/ipfs'
 const ipfsPath2 = './orbitdb/tests/orbitdb-access-controller/2/ipfs'
 
 Object.keys(testAPIs).forEach(API => {
-  describe('orbit-db - OrbitDBAccessController', function() {
+  describe('orbit-db - OrbitDBAccessController', function () {
     this.timeout(config.timeout)
 
     let ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
@@ -43,8 +43,8 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity({id: 'A', keystore: keystore1 })
-      id2 = await IdentityProvider.createIdentity({id: 'B', keystore: keystore2 })
+      id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1 })
+      id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
@@ -77,7 +77,7 @@ Object.keys(testAPIs).forEach(API => {
       }
     })
 
-    describe('Constructor', function() {
+    describe('Constructor', function () {
       let accessController
 
       before(async () => {
@@ -85,27 +85,27 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('creates an access controller', () => {
-        assert.notEqual(accessController, null)
-        assert.notEqual(accessController, undefined)
+        assert.notStrictEqual(accessController, null)
+        assert.notStrictEqual(accessController, undefined)
       })
 
       it('sets the controller type', () => {
-        assert.equal(accessController.type, 'orbitdb')
+        assert.strictEqual(accessController.type, 'orbitdb')
       })
 
       it('has OrbitDB instance', async () => {
-        assert.notEqual(accessController._orbitdb, null)
-        assert.equal(accessController._orbitdb.id, orbitdb1.id)
+        assert.notStrictEqual(accessController._orbitdb, null)
+        assert.strictEqual(accessController._orbitdb.id, orbitdb1.id)
       })
 
       it('has IPFS instance', async () => {
         const peerId1 = await accessController._orbitdb._ipfs.id()
         const peerId2 = await ipfs1.id()
-        assert.equal(peerId1.id, peerId2.id)
+        assert.strictEqual(peerId1.id, peerId2.id)
       })
 
       it('sets default capabilities', async () => {
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey])
         })
       })
@@ -117,7 +117,7 @@ Object.keys(testAPIs).forEach(API => {
           // doesn't matter what we put here, only identity is used for the check
         }
         const canAppend = await accessController.canAppend(mockEntry, id1.provider)
-        assert.equal(canAppend, true)
+        assert.strictEqual(canAppend, true)
       })
     })
 
@@ -130,8 +130,8 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('loads the root access controller from IPFS', () => {
-        assert.equal(accessController._db.access.type, 'ipfs')
-        assert.deepEqual(accessController._db.access.write, [id1.publicKey])
+        assert.strictEqual(accessController._db.access.type, 'ipfs')
+        assert.deepStrictEqual(accessController._db.access.write, [id1.publicKey])
       })
 
       it('adds a capability', async () => {
@@ -140,7 +140,7 @@ Object.keys(testAPIs).forEach(API => {
         } catch (e) {
           assert(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey]),
           write: new Set([id1.publicKey])
         })
@@ -151,9 +151,9 @@ Object.keys(testAPIs).forEach(API => {
           await accessController.grant('read', 'ABCD')
           await accessController.grant('delete', 'ABCD')
         } catch (e) {
-          assert.equal(e, null)
+          assert.strictEqual(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey]),
           write: new Set([id1.publicKey]),
           read: new Set(['ABCD']),
@@ -165,7 +165,7 @@ Object.keys(testAPIs).forEach(API => {
         return new Promise(async (resolve, reject) => {
           accessController.on('updated', () => {
             try {
-              assert.deepEqual(accessController.capabilities, {
+              assert.deepStrictEqual(accessController.capabilities, {
                 admin: new Set([id1.publicKey]),
                 write: new Set([id1.publicKey]),
                 read: new Set(['ABCD', 'AXES']),
@@ -188,15 +188,15 @@ Object.keys(testAPIs).forEach(API => {
           assert(e, null)
         }
         const mockEntry1 = {
-          identity: id1,
+          identity: id1
         }
         const mockEntry2 = {
-          identity: id2,
+          identity: id2
         }
         const canAppend1 = await accessController.canAppend(mockEntry1, id1.provider)
         const canAppend2 = await accessController.canAppend(mockEntry2, id2.provider)
-        assert.equal(canAppend1, true)
-        assert.equal(canAppend2, true)
+        assert.strictEqual(canAppend1, true)
+        assert.strictEqual(canAppend2, true)
       })
     })
 
@@ -214,9 +214,9 @@ Object.keys(testAPIs).forEach(API => {
           await accessController.grant('write', 'AABB')
           await accessController.revoke('write', 'AABB')
         } catch (e) {
-          assert.equal(e, null)
+          assert.strictEqual(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey]),
           write: new Set([id1.publicKey])
         })
@@ -226,9 +226,9 @@ Object.keys(testAPIs).forEach(API => {
         try {
           await accessController.revoke('write', id1.publicKey)
         } catch (e) {
-          assert.equal(e, null)
+          assert.strictEqual(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey])
         })
       })
@@ -237,9 +237,9 @@ Object.keys(testAPIs).forEach(API => {
         try {
           await accessController.revoke('admin', id1.publicKey)
         } catch (e) {
-          assert.equal(e, null)
+          assert.strictEqual(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey])
         })
       })
@@ -252,9 +252,9 @@ Object.keys(testAPIs).forEach(API => {
           await accessController.revoke('read', 'ABCDE')
           await accessController.revoke('delete', 'ABCDE')
         } catch (e) {
-          assert.equal(e, null)
+          assert.strictEqual(e, null)
         }
-        assert.deepEqual(accessController.capabilities, {
+        assert.deepStrictEqual(accessController.capabilities, {
           admin: new Set([id1.publicKey]),
           delete: new Set(['ABCD']),
           read: new Set(['ABCD']),
@@ -277,8 +277,8 @@ Object.keys(testAPIs).forEach(API => {
         }
         const canAppend = await accessController.canAppend(mockEntry1, id1.provider)
         const noAppend = await accessController.canAppend(mockEntry2, id2.provider)
-        assert.equal(canAppend, true)
-        assert.equal(noAppend, false)
+        assert.strictEqual(canAppend, true)
+        assert.strictEqual(noAppend, false)
       })
 
       it('emits \'updated\' event when a capability was removed', async () => {
@@ -288,7 +288,7 @@ Object.keys(testAPIs).forEach(API => {
         return new Promise(async (resolve, reject) => {
           accessController.on('updated', () => {
             try {
-              assert.deepEqual(accessController.capabilities, {
+              assert.deepStrictEqual(accessController.capabilities, {
                 admin: new Set([id1.publicKey, 'dogs']),
                 delete: new Set(['ABCD']),
                 read: new Set(['ABCD']),
@@ -328,14 +328,14 @@ Object.keys(testAPIs).forEach(API => {
 
       it('has the correct database address for the internal db', async () => {
         const addr = accessController._db.address.toString().split('/')
-        assert.equal(addr[addr.length - 1], '_access')
-        assert.equal(addr[addr.length - 2], dbName)
+        assert.strictEqual(addr[addr.length - 1], '_access')
+        assert.strictEqual(addr[addr.length - 2], dbName)
       })
 
       it('has correct capabalities', async () => {
-        assert.deepEqual(accessController.get('admin'), new Set([id1.publicKey]))
-        assert.deepEqual(accessController.get('write'), new Set(['A', 'B', 'C']))
-        assert.deepEqual(accessController.get('another'), new Set(['BB']))
+        assert.deepStrictEqual(accessController.get('admin'), new Set([id1.publicKey]))
+        assert.deepStrictEqual(accessController.get('write'), new Set(['A', 'B', 'C']))
+        assert.deepStrictEqual(accessController.get('another'), new Set(['BB']))
       })
     })
   })

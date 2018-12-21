@@ -5,7 +5,7 @@ const AccessController = require('./access-controller-interface')
 const type = 'eth-contract/cool-contract'
 
 class ContractAccessController extends AccessController {
-  constructor(web3, abi, address, defaultAccount) {
+  constructor (web3, abi, address, defaultAccount) {
     super()
     this.web3 = web3
     this.abi = abi
@@ -53,7 +53,7 @@ class ContractAccessController extends AccessController {
       return Promise.resolve(false)
     }
     options = Object.assign({}, { from: this.defaultAccount }, options)
-    return await this.contract.methods.grantCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
+    return this.contract.methods.grantCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
   }
 
   async revoke (capability, identifier, options = {}) {
@@ -62,7 +62,7 @@ class ContractAccessController extends AccessController {
       return Promise.resolve(false)
     }
     options = Object.assign({}, { from: this.defaultAccount }, options)
-    return await this.contract.methods.revokeCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
+    return this.contract.methods.revokeCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
   }
 
   // Factory
@@ -77,7 +77,7 @@ class ContractAccessController extends AccessController {
       throw new Error(`No 'contractAddress' given in options`)
     }
     if (!options.defaultAccount) {
-      console.warning("WARNING: no defaultAccount set")
+      console.warning('WARNING: no defaultAccount set')
     }
 
     return new ContractAccessController(

@@ -49,7 +49,7 @@ class OrbitDBAccessController extends AccessController {
       // and make sure all values are Sets
       Object.entries({
         ...capabilities,
-        // Add the root access controller's 'write' access list 
+        // Add the root access controller's 'write' access list
         // as admins on this controller
         ...{ admin: new Set([...(capabilities.admin || []), ...this._db.access.write])
         }
@@ -69,15 +69,14 @@ class OrbitDBAccessController extends AccessController {
   }
 
   async load (address) {
-    if (this._db)
-      await this._db.close()
+    if (this._db) { await this._db.close() }
 
     // Force '<address>/_access' naming for the database
     this._db = await this._orbitdb.keyvalue(ensureAddress(address), {
       // use ipfs controller as a immutable "root controller"
       accessController: {
         type: 'ipfs',
-        write: this._options.admin || [this._orbitdb.identity.publicKey],
+        write: this._options.admin || [this._orbitdb.identity.publicKey]
       },
       sync: true
     })
@@ -124,7 +123,7 @@ class OrbitDBAccessController extends AccessController {
 
     // Add write access from options
     if (options.write && !options.address) {
-      await pMapSeries(options.write, async (e) => await ac.grant('write', e))
+      await pMapSeries(options.write, async (e) => ac.grant('write', e))
     }
 
     return ac

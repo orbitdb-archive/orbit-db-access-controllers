@@ -6,7 +6,7 @@ const isValidEthAddress = require('./utils/is-valid-eth-address')
 const type = 'eth-contract/deposit-contract'
 
 class DepositContractAccessController extends AccessController {
-  constructor(web3, abi, address, defaultAccount) {
+  constructor (web3, abi, address, defaultAccount) {
     super()
     this.web3 = web3
     this.abi = abi
@@ -39,7 +39,7 @@ class DepositContractAccessController extends AccessController {
       console.warn(`WARNING: "${entry.identity.id}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    return await this.contract.methods.hasPaidDeposit(entry.identity.id).call()
+    return this.contract.methods.hasPaidDeposit(entry.identity.id).call()
   }
 
   async grant (capability, identifier, options = {}) {
@@ -48,11 +48,11 @@ class DepositContractAccessController extends AccessController {
       return Promise.resolve(false)
     }
     if (capability === 'admin') {
-      //do one thing
+      // do one thing
       return Promise.resolve(false)
     } else if (capability === 'write') {
       options = Object.assign({}, { from: this.defaultAccount }, options)
-      return await this.contract.methods.payDeposit(identifier).send(options)
+      return this.contract.methods.payDeposit(identifier).send(options)
     }
   }
 
@@ -63,13 +63,12 @@ class DepositContractAccessController extends AccessController {
     }
 
     if (capability === 'admin') {
-      //do one thing
+      // do one thing
       return Promise.resolve(false)
     } else if (capability === 'write') {
       options = Object.assign({}, { from: this.defaultAccount }, options)
-      return await this.contract.methods.expireDeposit(identifier).send(options)
+      return this.contract.methods.expireDeposit(identifier).send(options)
     }
-
   }
 
   // Factory
@@ -84,7 +83,7 @@ class DepositContractAccessController extends AccessController {
       throw new Error(`No 'contractAddress' given in options`)
     }
     if (!options.defaultAccount) {
-      console.warning("WARNING: no defaultAccount set")
+      console.warning('WARNING: no defaultAccount set')
     }
 
     return new DepositContractAccessController(

@@ -19,7 +19,7 @@ class IPFSAccessController extends AccessController {
     return this._write
   }
 
-  async canAppend(entry, identityProvider) {
+  async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
     if (this.write.includes(entry.identity.publicKey) ||
       this.write.includes('*')) {
@@ -31,14 +31,13 @@ class IPFSAccessController extends AccessController {
   async load (address) {
     // Transform '/ipfs/QmPFtHi3cmfZerxtH9ySLdzpg1yFhocYDZgEZywdUXHxFU'
     // to 'QmPFtHi3cmfZerxtH9ySLdzpg1yFhocYDZgEZywdUXHxFU'
-    if (address.indexOf('/ipfs') === 0)
-      address = address.split('/')[2]
+    if (address.indexOf('/ipfs') === 0) { address = address.split('/')[2] }
 
     try {
       const dag = await this._ipfs.object.get(address)
       this._write = JSON.parse(dag.toJSON().data)
     } catch (e) {
-      console.log("IPFSAccessController.load ERROR:", e)
+      console.log('IPFSAccessController.load ERROR:', e)
     }
   }
 
@@ -49,14 +48,14 @@ class IPFSAccessController extends AccessController {
       const dag = await this._ipfs.object.put(Buffer.from(access))
       hash = dag.toJSON().multihash.toString()
     } catch (e) {
-      console.log("IPFSAccessController.save ERROR:", e)
+      console.log('IPFSAccessController.save ERROR:', e)
     }
     // return the manifest data
     return { address: hash }
   }
 
   static async create (orbitdb, options = {}) {
-    options = {...options, ...{ write: options.write || [orbitdb.identity.publicKey] }}
+    options = { ...options, ...{ write: options.write || [orbitdb.identity.publicKey] } }
     return new IPFSAccessController(orbitdb._ipfs, options)
   }
 }
