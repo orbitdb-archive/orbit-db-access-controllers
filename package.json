@@ -15,7 +15,13 @@
     "type": "git",
     "url": "git+https://github.com/orbitdb/orbit-db-access-controllers.git"
   },
-  "author": "",
+  "contributors": [
+    "shamb0t",
+    "haadcode",
+    "latenssi",
+    "adam-palazzo",
+    "RichardLitt"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/orbitdb/orbit-db-access-controllers/issues"
