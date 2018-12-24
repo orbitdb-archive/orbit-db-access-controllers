@@ -189,7 +189,7 @@ Object.keys(testAPIs).forEach(API => {
               await db.add('hello?') // should throw error
               assert.strictEqual('Should not end here', false)
             } catch (e) {
-              err = e
+              err = e.toString()
             }
             assert.strictEqual(err, `Error: Could not append entry, key "${id1.id}" is not allowed to write to the log`)
           })
@@ -242,7 +242,7 @@ Object.keys(testAPIs).forEach(API => {
             try {
               await db2.access.grant('write', id2.id)
             } catch (e) {
-              err = e
+              err = e.toString()
             }
             assert.strictEqual(err, 'Error: No "from" address specified in neither the given options, nor the default options.')
           })
@@ -253,9 +253,9 @@ Object.keys(testAPIs).forEach(API => {
             try {
               await db2.access.grant('write', id2.id, { from: accounts[i] }) // from address can grant/revoke access
             } catch (e) {
-              err = e
+              err = e.toString()
             }
-            assert.strictEqual(err, null)
+            assert.strictEqual(err, undefined)
             const canAppend = await db2.access.canAppend({ identity: id2 }, id2.provider)
             assert.strictEqual(canAppend, true)
           })
@@ -267,7 +267,7 @@ Object.keys(testAPIs).forEach(API => {
               await db.access.revoke('write', id2.id)
               await db2.add('hello?')
             } catch (e) {
-              err = e
+              err = e.toString()
             }
             assert.strictEqual(err, `Error: Could not append entry, key "${id2.id}" is not allowed to write to the log`)
           })

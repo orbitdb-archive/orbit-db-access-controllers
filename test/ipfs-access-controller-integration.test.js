@@ -136,7 +136,7 @@ Object.keys(testAPIs).forEach(API => {
           try {
             await db.add('hello?')
           } catch (e) {
-            err = e
+            err = e.toString()
           }
 
           const res = await db.iterator().collect().map(e => e.payload.value)
@@ -150,7 +150,7 @@ Object.keys(testAPIs).forEach(API => {
             await db2.add('hello!!')
             assert.strictEqual('Should not end here', false)
           } catch (e) {
-            err = e
+            err = e.toString()
           }
 
           const res = await db2.iterator().collect().map(e => e.payload.value)

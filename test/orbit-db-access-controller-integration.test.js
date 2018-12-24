@@ -108,7 +108,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('makes database use the correct access controller', async () => {
-        assert.strictEqual(acManifest.params.address, db.access._db.address)
+        assert.strictEqual(acManifest.params.address, db.access._db.address.toString())
       })
 
       it('saves database manifest file locally', async () => {
@@ -152,7 +152,7 @@ Object.keys(testAPIs).forEach(API => {
             await db2.add('hello?')
             assert.strictEqual('Should not end here', false)
           } catch (e) {
-            err = e
+            err = e.toString()
           }
 
           assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
@@ -189,7 +189,7 @@ Object.keys(testAPIs).forEach(API => {
           try {
             await db2.access.grant('write', id2.publicKey)
           } catch (e) {
-            err = e
+            err = e.toString()
           }
           assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
@@ -199,7 +199,7 @@ Object.keys(testAPIs).forEach(API => {
           try {
             await db2.access.revoke('write', id1.publicKey)
           } catch (e) {
-            err = e
+            err = e.toString()
           }
           assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
@@ -215,7 +215,7 @@ Object.keys(testAPIs).forEach(API => {
                     // Try adding something again
                     await db2.add('hello?')
                   } catch (e) {
-                    err = e
+                    err = e.toString()
                   }
                   resolve(err)
                 })

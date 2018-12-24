@@ -115,7 +115,7 @@ Object.keys(testAPIs).forEach(API => {
         try {
           AccessControllers.addAccessController({})
         } catch (e) {
-          err = e
+          err = e.toString()
         }
         assert.strictEqual(err, 'Error: AccessController class needs to be given as an option')
       })
@@ -125,7 +125,7 @@ Object.keys(testAPIs).forEach(API => {
         try {
           AccessControllers.addAccessController({ AccessController: {} })
         } catch (e) {
-          err = e
+          err = e.toString()
         }
         assert.strictEqual(err, 'Error: Given AccessController class needs to implement: static get type() { /* return a string */}.')
       })
