@@ -1,7 +1,6 @@
 'use strict'
 
 const assert = require('assert')
-const mapSeries = require('p-map-series')
 const rmrf = require('rimraf')
 const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
@@ -44,8 +43,8 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1})
-      id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2})
+      id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1 })
+      id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
@@ -88,22 +87,22 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('creates an access controller', () => {
-        assert.notEqual(accessController, null)
-        assert.notEqual(accessController, undefined)
+        assert.notStrictEqual(accessController, null)
+        assert.notStrictEqual(accessController, undefined)
       })
 
       it('sets the controller type', () => {
-        assert.equal(accessController.type, 'ipfs')
+        assert.strictEqual(accessController.type, 'ipfs')
       })
 
       it('has IPFS instance', async () => {
         const peerId1 = await accessController._ipfs.id()
         const peerId2 = await ipfs1.id()
-        assert.equal(peerId1.id, peerId2.id)
+        assert.strictEqual(peerId1.id, peerId2.id)
       })
 
       it('sets default capabilities', async () => {
-        assert.deepEqual(accessController.write, [id1.publicKey])
+        assert.deepStrictEqual(accessController.write, [id1.publicKey])
       })
 
       it('allows owner to append after creation', async () => {
@@ -113,7 +112,7 @@ Object.keys(testAPIs).forEach(API => {
           // doesn't matter what we put here, only identity is used for the check
         }
         const canAppend = await accessController.canAppend(mockEntry, id1.provider)
-        assert.equal(canAppend, true)
+        assert.strictEqual(canAppend, true)
       })
     })
 
@@ -129,7 +128,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('has correct capabalities', async () => {
-        assert.deepEqual(accessController.write, ['A', 'B', id1.publicKey])
+        assert.deepStrictEqual(accessController.write, ['A', 'B', id1.publicKey])
       })
     })
   })

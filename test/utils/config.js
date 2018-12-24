@@ -21,7 +21,7 @@ module.exports = {
         webRTCStar: {
           Enabled: false
         }
-      },
+      }
     }
   },
   daemon1: {
@@ -45,8 +45,8 @@ module.exports = {
         webRTCStar: {
           Enabled: false
         }
-      },
-    },
+      }
+    }
   },
   daemon2: {
     repo: './ipfs/orbitdb/tests/daemon2',
@@ -69,7 +69,7 @@ module.exports = {
         webRTCStar: {
           Enabled: false
         }
-      },
-    },
-  },
+      }
+    }
+  }
 }

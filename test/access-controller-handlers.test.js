@@ -1,7 +1,6 @@
 'use strict'
 
 const assert = require('assert')
-const mapSeries = require('p-map-series')
 const rmrf = require('rimraf')
 const Web3 = require('web3')
 const OrbitDB = require('orbit-db')
@@ -17,7 +16,7 @@ const {
   config,
   startIpfs,
   stopIpfs,
-  testAPIs,
+  testAPIs
 } = require('./utils')
 
 const dbPath1 = './orbitdb/tests/orbitdb-access-controller/1'
@@ -26,11 +25,11 @@ const ipfsPath1 = './orbitdb/tests/orbitdb-access-controller/1/ipfs'
 const ipfsPath2 = './orbitdb/tests/orbitdb-access-controller/2/ipfs'
 
 Object.keys(testAPIs).forEach(API => {
-  describe('orbit-db - Access Controller Handlers', function() {
+  describe('orbit-db - Access Controller Handlers', function () {
     this.timeout(config.timeout)
 
     let web3, contract, ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
-    let orbitdb1, orbitdb2, db1, db2
+    let orbitdb1, orbitdb2
 
     before(async () => {
       config.daemon1.repo = ipfsPath1
@@ -47,8 +46,8 @@ Object.keys(testAPIs).forEach(API => {
       const keystore1 = Keystore.create(dbPath1 + '/keys')
       const keystore2 = Keystore.create(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1})
-      id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2})
+      id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1 })
+      id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         ACFactory: AccessControllers,
@@ -64,53 +63,49 @@ Object.keys(testAPIs).forEach(API => {
     })
 
     after(async () => {
-      if(orbitdb1)
-        await orbitdb1.stop()
+      if (orbitdb1) { await orbitdb1.stop() }
 
-      if(orbitdb2)
-        await orbitdb2.stop()
+      if (orbitdb2) { await orbitdb2.stop() }
 
-      if (ipfsd1)
-        await stopIpfs(ipfsd1)
+      if (ipfsd1) { await stopIpfs(ipfsd1) }
 
-      if (ipfsd2)
-        await stopIpfs(ipfsd2)
+      if (ipfsd2) { await stopIpfs(ipfsd2) }
     })
 
-    describe('isSupported', function() {
+    describe('isSupported', function () {
       it('supports default access controllers', () => {
-        assert.equal(AccessControllers.isSupported('ipfs'), true)
-        assert.equal(AccessControllers.isSupported('orbitdb'), true)
+        assert.strictEqual(AccessControllers.isSupported('ipfs'), true)
+        assert.strictEqual(AccessControllers.isSupported('orbitdb'), true)
       })
 
       it('doesn\'t support smart contract access controller by default', () => {
-        assert.equal(AccessControllers.isSupported(ContractAccessController.type), false)
+        assert.strictEqual(AccessControllers.isSupported(ContractAccessController.type), false)
       })
     })
 
-    describe('addAccessController', function() {
+    describe('addAccessController', function () {
       it('supports added access controller', () => {
         const options = {
           AccessController: ContractAccessController,
           web3: web3,
-          abi: abi,
+          abi: abi
         }
         AccessControllers.addAccessController(options)
-        assert.equal(AccessControllers.isSupported(ContractAccessController.type), true)
+        assert.strictEqual(AccessControllers.isSupported(ContractAccessController.type), true)
       })
     })
 
-    describe('create access controllers', function() {
+    describe('create access controllers', function () {
       let options = {
-        AccessController: ContractAccessController,
+        AccessController: ContractAccessController
       }
 
       before(async () => {
         web3 = new Web3(ganache.provider())
         let accounts = await web3.eth.getAccounts()
         contract = await new web3.eth.Contract(abi)
-                                .deploy({ data: bytecode })
-                                .send({ from: accounts[0], gas: '1000000'})
+          .deploy({ data: bytecode })
+          .send({ from: accounts[0], gas: '1000000' })
         options = Object.assign({}, options, { web3, abi, contractAddress: contract._address, defaultAccount: accounts[0] })
         AccessControllers.addAccessController(options)
       })
@@ -120,9 +115,9 @@ Object.keys(testAPIs).forEach(API => {
         try {
           AccessControllers.addAccessController({})
         } catch (e) {
-          err = e
+          err = e.toString()
         }
-        assert.equal(err, 'Error: AccessController class needs to be given as an option')
+        assert.strictEqual(err, 'Error: AccessController class needs to be given as an option')
       })
 
       it('throws an error if AccessController doesn\'t define type', async () => {
@@ -130,23 +125,23 @@ Object.keys(testAPIs).forEach(API => {
         try {
           AccessControllers.addAccessController({ AccessController: {} })
         } catch (e) {
-          err = e
+          err = e.toString()
         }
-        assert.equal(err, 'Error: Given AccessController class needs to implement: static get type() { /* return a string */}.')
+        assert.strictEqual(err, 'Error: Given AccessController class needs to implement: static get type() { /* return a string */}.')
       })
 
       it('creates a custom access controller', async () => {
         const type = ContractAccessController.type
         const acManifestHash = await AccessControllers.create(orbitdb1, type, options)
-        assert.notEqual(acManifestHash, null)
+        assert.notStrictEqual(acManifestHash, null)
 
         const ac = await AccessControllers.resolve(orbitdb1, acManifestHash, options)
-        assert.equal(ac.type, type)
+        assert.strictEqual(ac.type, type)
       })
 
       it('removes the custom access controller', async () => {
         AccessControllers.removeAccessController(ContractAccessController.type)
-        assert.equal(AccessControllers.isSupported(ContractAccessController.type), false)
+        assert.strictEqual(AccessControllers.isSupported(ContractAccessController.type), false)
       })
     })
   })

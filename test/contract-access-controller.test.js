@@ -1,7 +1,6 @@
 'use strict'
 
 const assert = require('assert')
-const mapSeries = require('p-map-series')
 const rmrf = require('rimraf')
 const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
@@ -11,7 +10,6 @@ const ContractAccessController = require('../src/contract-access-controller')
 const DepositContractAccessController = require('../src/deposit-contract-access-controller')
 const AccessControllers = require('../')
 const Web3 = require('web3')
-const { open } = require('@colony/purser-software')
 const ganache = require('ganache-cli')
 
 // Include test utilities
@@ -105,8 +103,8 @@ Object.keys(testAPIs).forEach(API => {
         let accessController, contract
         before(async () => {
           contract = await new web3.eth.Contract(ac.contract.abi)
-                                  .deploy({ data: ac.contract.bytecode })
-                                  .send({ from: accounts[i], gas: '1000000'})
+            .deploy({ data: ac.contract.bytecode })
+            .send({ from: accounts[i], gas: '1000000' })
 
           accessController = await ac.AccessController.create(orbitdb1, {
             type: ac.AccessController.type,
@@ -119,12 +117,12 @@ Object.keys(testAPIs).forEach(API => {
         })
 
         it('creates an access controller', () => {
-          assert.notEqual(accessController, null)
-          assert.notEqual(accessController, undefined)
+          assert.notStrictEqual(accessController, null)
+          assert.notStrictEqual(accessController, undefined)
         })
 
         it('sets the controller type', () => {
-          assert.equal(accessController.type, ac.AccessController.type)
+          assert.strictEqual(accessController.type, ac.AccessController.type)
         })
 
         it('grants access to key', async () => {
@@ -135,7 +133,7 @@ Object.keys(testAPIs).forEach(API => {
           }
           await accessController.grant('write', id1.id)
           const canAppend = await accessController.canAppend(mockEntry, id1.provider)
-          assert.equal(canAppend, true)
+          assert.strictEqual(canAppend, true)
         })
 
         it('grants access to multiple keys', async () => {
@@ -145,9 +143,9 @@ Object.keys(testAPIs).forEach(API => {
           await accessController.grant('write', orbitdb2.identity.id)
           const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
 
-          assert.equal(canAppend1, true)
-          assert.equal(canAppend2, false)
-          assert.equal(canAppend3, true)
+          assert.strictEqual(canAppend1, true)
+          assert.strictEqual(canAppend2, false)
+          assert.strictEqual(canAppend3, true)
         })
 
         describe('save and load', function () {
@@ -178,11 +176,11 @@ Object.keys(testAPIs).forEach(API => {
           it('has correct capabalities', async () => {
             const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
             const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
-            const canAppend3 = await accessController.canAppend({ identity: { id: "someotherid"} }, orbitdb1.identity.provider)
+            const canAppend3 = await accessController.canAppend({ identity: { id: 'someotherid' } }, orbitdb1.identity.provider)
 
-            assert.equal(canAppend1, true)
-            assert.equal(canAppend2, true)
-            assert.equal(canAppend3, false)
+            assert.strictEqual(canAppend1, true)
+            assert.strictEqual(canAppend2, true)
+            assert.strictEqual(canAppend3, false)
           })
         })
       })
