@@ -152,10 +152,10 @@ Object.keys(testAPIs).forEach(API => {
             await db2.add('hello?')
             assert.strictEqual('Should not end here', false)
           } catch (e) {
-            err = e.toString()
+            err = e
           }
 
-          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err.message, `Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
 
           const doChanges = () => {
             return new Promise(async (resolve, reject) => {
@@ -189,9 +189,9 @@ Object.keys(testAPIs).forEach(API => {
           try {
             await db2.access.grant('write', id2.publicKey)
           } catch (e) {
-            err = e.toString()
+            err = e
           }
-          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err.message, `Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
 
         it('can\'t revoke access if doesn\'t have write access', async () => {
@@ -199,9 +199,9 @@ Object.keys(testAPIs).forEach(API => {
           try {
             await db2.access.revoke('write', id1.publicKey)
           } catch (e) {
-            err = e.toString()
+            err = e
           }
-          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err.message, `Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
 
         it('revoking access disables ability to write to the database', async () => {
@@ -215,7 +215,7 @@ Object.keys(testAPIs).forEach(API => {
                     // Try adding something again
                     await db2.add('hello?')
                   } catch (e) {
-                    err = e.toString()
+                    err = e
                   }
                   resolve(err)
                 })
@@ -227,7 +227,7 @@ Object.keys(testAPIs).forEach(API => {
             })
           }
           const err = await getError()
-          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err.message, `Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
         })
       })
     })

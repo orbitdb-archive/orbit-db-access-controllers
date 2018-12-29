@@ -136,7 +136,7 @@ Object.keys(testAPIs).forEach(API => {
           try {
             await db.add('hello?')
           } catch (e) {
-            err = e.toString()
+            err = e
           }
 
           const res = await db.iterator().collect().map(e => e.payload.value)
@@ -150,11 +150,11 @@ Object.keys(testAPIs).forEach(API => {
             await db2.add('hello!!')
             assert.strictEqual('Should not end here', false)
           } catch (e) {
-            err = e.toString()
+            err = e
           }
 
           const res = await db2.iterator().collect().map(e => e.payload.value)
-          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err.message, `Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
           assert.deepStrictEqual(res.includes(e => e === 'hello!!'), false)
         })
       })

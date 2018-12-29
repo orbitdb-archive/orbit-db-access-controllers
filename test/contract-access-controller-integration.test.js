@@ -189,9 +189,9 @@ Object.keys(testAPIs).forEach(API => {
               await db.add('hello?') // should throw error
               assert.strictEqual('Should not end here', false)
             } catch (e) {
-              err = e.toString()
+              err = e
             }
-            assert.strictEqual(err, `Error: Could not append entry, key "${id1.id}" is not allowed to write to the log`)
+            assert.strictEqual(err.message, `Could not append entry, key "${id1.id}" is not allowed to write to the log`)
           })
 
           it('granting access enables to write to the database', async () => {
@@ -242,9 +242,9 @@ Object.keys(testAPIs).forEach(API => {
             try {
               await db2.access.grant('write', id2.id)
             } catch (e) {
-              err = e.toString()
+              err = e
             }
-            assert.strictEqual(err, 'Error: No "from" address specified in neither the given options, nor the default options.')
+            assert.strictEqual(err.message, 'No "from" address specified in neither the given options, nor the default options.')
           })
 
           it('can change permissions by passing in from address', async () => {
@@ -253,7 +253,7 @@ Object.keys(testAPIs).forEach(API => {
             try {
               await db2.access.grant('write', id2.id, { from: accounts[i] }) // from address can grant/revoke access
             } catch (e) {
-              err = e.toString()
+              err = e
             }
             assert.strictEqual(err, undefined)
             const canAppend = await db2.access.canAppend({ identity: id2 }, id2.provider)
@@ -267,9 +267,9 @@ Object.keys(testAPIs).forEach(API => {
               await db.access.revoke('write', id2.id)
               await db2.add('hello?')
             } catch (e) {
-              err = e.toString()
+              err = e
             }
-            assert.strictEqual(err, `Error: Could not append entry, key "${id2.id}" is not allowed to write to the log`)
+            assert.strictEqual(err.message, `Could not append entry, key "${id2.id}" is not allowed to write to the log`)
           })
         })
       })
