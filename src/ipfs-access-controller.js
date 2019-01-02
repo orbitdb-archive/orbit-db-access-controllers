@@ -21,8 +21,10 @@ class IPFSAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
-    if (this.write.includes(entry.identity.publicKey) ||
-      this.write.includes('*')) {
+    let write = this.write
+    if (entry.v === 0) write = this.write.write
+    if (write.includes(entry.key) ||
+      write.includes('*')) {
       return true
     }
     return false
@@ -34,8 +36,8 @@ class IPFSAccessController extends AccessController {
     if (address.indexOf('/ipfs') === 0) { address = address.split('/')[2] }
 
     try {
-      const dag = await this._ipfs.object.get(address)
-      this._write = JSON.parse(dag.toJSON().data)
+      const dag = await this._ipfs.dag.get(address)
+      this._write = dag.value.data ? JSON.parse(dag.value.data) : JSON.parse(dag.value)
     } catch (e) {
       console.log('IPFSAccessController.load ERROR:', e)
     }
@@ -45,8 +47,8 @@ class IPFSAccessController extends AccessController {
     let hash
     try {
       const access = JSON.stringify(this.write, null, 2)
-      const dag = await this._ipfs.object.put(Buffer.from(access))
-      hash = dag.toJSON().multihash.toString()
+      const dag = await this._ipfs.dag.put(access)
+      hash = dag.toBaseEncodedString()
     } catch (e) {
       console.log('IPFSAccessController.save ERROR:', e)
     }
