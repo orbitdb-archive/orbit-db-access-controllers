@@ -12,6 +12,8 @@ npm i orbit-db-access-controllers
 
 ## Usage
 
+By default, if no write-array is specified in options, the access control is set so that the initial user is the only one who has access (specified by the identity property of the orbitdb instance given in the argument). For the Ethereum-based contract example, the account which deploys the contract is initially given access.
+
 #### Creating a custom Access Controller
 
 You can create a custom access controller by implementing the `AccessController` [interface](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/access-controller-interface.js) and adding it to the AccessControllers object before passing it to OrbitDB. For more detailed examples, see the implementation of the [Ethereum Contract Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/contract-access-controller.js) and [OrbitDB Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/orbitdb-access-controller.js).
