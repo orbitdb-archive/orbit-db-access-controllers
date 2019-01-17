@@ -11,7 +11,7 @@ const ContractAccessController = require('../src/contract-access-controller')
 const DepositContractAccessController = require('../src/deposit-contract-access-controller')
 const ganache = require('ganache-cli')
 const Web3 = require('web3')
-
+const io = require('orbit-db-io')
 // Include test utilities
 const {
   config,
@@ -66,19 +66,16 @@ Object.keys(testAPIs).forEach(API => {
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
 
-      let options = {
-        AccessControllers: [ ContractAccessController, DepositContractAccessController ]
-      }
-      AccessControllers.addAccessControllers(options)
+      accessControllers.forEach(ac => AccessControllers.addAccessController(ac))
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath2,
         identity: id2
       })
@@ -105,8 +102,7 @@ Object.keys(testAPIs).forEach(API => {
     describe('OrbitDB Integration', function () {
       accessControllers.forEach(async (ac, i) => {
         let db, db2
-        let dag
-        let dbManifest, acManifest
+        let dbManifest, acManifest, access
         let contract
 
         before(async () => {
@@ -137,15 +133,14 @@ Object.keys(testAPIs).forEach(API => {
 
           await db2.load()
 
-          dag = await ipfs1.object.get(db.address.root)
-          dbManifest = JSON.parse(dag.toJSON().data)
+          dbManifest = await io.read(ipfs1, db.address.root)
           const hash = dbManifest.accessController.split('/').pop()
-          const acManifestDag = await ipfs1.object.get(hash)
-          acManifest = JSON.parse(acManifestDag.toJSON().data)
+          acManifest = await io.read(ipfs1, hash)
+          access = await io.read(ipfs1, acManifest.params.address)
         })
 
         it('makes database use the correct access controller', async () => {
-          assert.strictEqual(acManifest.params.contractAddress, db.access.address)
+          assert.strictEqual(access.contractAddress, db.access.address)
         })
 
         it('saves database manifest file locally', async () => {
@@ -177,8 +172,8 @@ Object.keys(testAPIs).forEach(API => {
           })
 
           it('has correct address', async () => {
-            assert.strictEqual(acManifest.params.contractAddress.indexOf('0x'), 0)
-            assert.strictEqual(acManifest.params.contractAddress, db.access.address)
+            assert.strictEqual(access.contractAddress.indexOf('0x'), 0)
+            assert.strictEqual(access.contractAddress, db.access.address)
           })
         })
 

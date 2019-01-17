@@ -47,13 +47,13 @@ Object.keys(testAPIs).forEach(API => {
       id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath2,
         identity: id2
       })
@@ -107,7 +107,8 @@ Object.keys(testAPIs).forEach(API => {
 
       it('allows owner to append after creation', async () => {
         const mockEntry = {
-          identity: id1
+          identity: id1,
+          v: 1
           // ...
           // doesn't matter what we put here, only identity is used for the check
         }

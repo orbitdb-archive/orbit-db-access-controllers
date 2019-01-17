@@ -2,12 +2,13 @@
 
 const AccessController = require('./access-controller-interface')
 const isValidEthAddress = require('./utils/is-valid-eth-address')
-
+const io = require('orbit-db-io')
 const type = 'eth-contract/deposit-contract'
 
 class DepositContractAccessController extends AccessController {
-  constructor (web3, abi, address, defaultAccount) {
+  constructor (ipfs, web3, abi, address, defaultAccount) {
     super()
+    this._ipfs = ipfs
     this.web3 = web3
     this.abi = abi
     this.contractAddress = address
@@ -22,15 +23,32 @@ class DepositContractAccessController extends AccessController {
     return this.contractAddress
   }
 
-  async load () {
+  async load (address) {
+    if (address) {
+      try {
+        if (address.indexOf('/ipfs') === 0) { address = address.split('/')[2] }
+        const access = await io.read(this._ipfs, address)
+        this.contractAddress = access.contractAddress
+        this.abi = JSON.parse(access.abi)
+      } catch (e) {
+        console.log('DepositContractAccessController.load ERROR:', e)
+      }
+    }
     this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress)
   }
 
   async save () {
-    return {
-      contractAddress: this.contractAddress,
-      abi: this.abi
+    let cid
+    try {
+      cid = await io.write(this._ipfs, 'dag-cbor', {
+        contractAddress: this.address,
+        abi: JSON.stringify(this.abi)
+      })
+    } catch (e) {
+      console.log('DepositContractAccessController.save ERROR:', e)
     }
+    // return the manifest data
+    return { address: cid }
   }
 
   async canAppend (entry, identityProvider) {
@@ -76,17 +94,18 @@ class DepositContractAccessController extends AccessController {
     if (!options.web3) {
       throw new Error(`No 'web3' given in options`)
     }
-    if (!options.abi) {
+    if (!options.abi && !options.address) {
       throw new Error(`No 'abi' given in options`)
     }
-    if (!options.contractAddress) {
+    if (!options.contractAddress && !options.address) {
       throw new Error(`No 'contractAddress' given in options`)
     }
     if (!options.defaultAccount) {
-      console.warning('WARNING: no defaultAccount set')
+      console.warn('WARNING: no defaultAccount set')
     }
 
     return new DepositContractAccessController(
+      orbitdb._ipfs,
       options.web3,
       options.abi,
       options.contractAddress,

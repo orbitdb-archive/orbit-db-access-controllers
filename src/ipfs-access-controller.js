@@ -1,7 +1,6 @@
 'use strict'
-
+const io = require('orbit-db-io')
 const AccessController = require('./access-controller-interface')
-
 const type = 'ipfs'
 
 class IPFSAccessController extends AccessController {
@@ -21,7 +20,8 @@ class IPFSAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
-    if (this.write.includes(entry.identity.publicKey) ||
+    const publicKey = entry.v === 0 ? entry.key : entry.identity.publicKey
+    if (this.write.includes(publicKey) ||
       this.write.includes('*')) {
       return true
     }
@@ -34,24 +34,24 @@ class IPFSAccessController extends AccessController {
     if (address.indexOf('/ipfs') === 0) { address = address.split('/')[2] }
 
     try {
-      const dag = await this._ipfs.object.get(address)
-      this._write = JSON.parse(dag.toJSON().data)
+      const access = await io.read(this._ipfs, address)
+      this._write = JSON.parse(access.write)
     } catch (e) {
       console.log('IPFSAccessController.load ERROR:', e)
     }
   }
 
   async save () {
-    let hash
+    let cid
     try {
-      const access = JSON.stringify(this.write, null, 2)
-      const dag = await this._ipfs.object.put(Buffer.from(access))
-      hash = dag.toJSON().multihash.toString()
+
+      cid = await io.write(this._ipfs, 'dag-cbor', { write: JSON.stringify(this.write, null, 2) })
+
     } catch (e) {
       console.log('IPFSAccessController.save ERROR:', e)
     }
     // return the manifest data
-    return { address: hash }
+    return { address: cid }
   }
 
   static async create (orbitdb, options = {}) {

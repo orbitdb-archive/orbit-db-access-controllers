@@ -6,7 +6,7 @@ const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
-
+const io = require('orbit-db-io')
 // Include test utilities
 const {
   config,
@@ -46,13 +46,13 @@ Object.keys(testAPIs).forEach(API => {
       id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath2,
         identity: id2
       })
@@ -70,7 +70,6 @@ Object.keys(testAPIs).forEach(API => {
 
     describe('OrbitDB Integration', function () {
       let db, db2
-      let dag
       let dbManifest, acManifest
 
       before(async () => {
@@ -87,11 +86,9 @@ Object.keys(testAPIs).forEach(API => {
         })
         await db2.load()
 
-        dag = await ipfs1.object.get(db.address.root)
-        dbManifest = JSON.parse(dag.toJSON().data)
+        dbManifest = await io.read(ipfs1, db.address.root)
         const hash = dbManifest.accessController.split('/').pop()
-        const acManifestDag = await ipfs1.object.get(hash)
-        acManifest = JSON.parse(acManifestDag.toJSON().data)
+        acManifest = await io.read(ipfs1, hash)
       })
 
       it('has the correct access rights after creating the database', async () => {
@@ -150,11 +147,11 @@ Object.keys(testAPIs).forEach(API => {
             await db2.add('hello!!')
             assert.strictEqual('Should not end here', false)
           } catch (e) {
-            err = e.toString()
+            err = e
           }
 
           const res = await db2.iterator().collect().map(e => e.payload.value)
-          assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
+          assert.strictEqual(err.message, `Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
           assert.deepStrictEqual(res.includes(e => e === 'hello!!'), false)
         })
       })
