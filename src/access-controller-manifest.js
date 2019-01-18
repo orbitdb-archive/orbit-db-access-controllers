@@ -10,8 +10,9 @@ class AccessControllerManifest {
     // TODO: ensure this is a valid multihash
     if (manifestHash.indexOf('/ipfs') === 0) { manifestHash = manifestHash.split('/')[2] }
 
-    const dag = await ipfs.object.get(manifestHash)
-    const { type, params } = JSON.parse(dag.toJSON().data)
+    const dag = await dagNode.read(ipfs, manifestHash, [])
+    const data = JSON.parse(dag)
+    const { type, params } = data.type ? data : { type: 'ipfs', params: { address: manifestHash } }
     return new AccessControllerManifest(type, params)
   }
 
