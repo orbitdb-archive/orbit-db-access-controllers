@@ -43,7 +43,7 @@
     "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider",
     "orbit-db-keystore": "github:orbitdb/orbit-db-keystore",
     "standard": "^12.0.1",
-    "web3": "~1.0.0-beta.36"
+    "web3": "1.0.0-beta.37"
   },
   "standard": {
     "env": [
