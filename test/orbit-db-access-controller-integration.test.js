@@ -6,7 +6,7 @@ const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
-
+const { dagNode } = require('../src/utils')
 // Include test utilities
 const {
   config,
@@ -78,7 +78,6 @@ Object.keys(testAPIs).forEach(API => {
 
     describe('OrbitDB Integration', function () {
       let db, db2
-      let dag
       let dbManifest, acManifest
 
       before(async () => {
@@ -93,11 +92,17 @@ Object.keys(testAPIs).forEach(API => {
         db2 = await orbitdb2.feed(db.address, { identity: id2 })
         await db2.load()
 
+<<<<<<< HEAD
         dag = await ipfs1.object.get(db.address.root)
         dbManifest = JSON.parse(dag.toJSON().data)
         const hash = dbManifest.accessController.split('/').pop()
         const acManifestDag = await ipfs1.object.get(hash)
         acManifest = JSON.parse(acManifestDag.toJSON().data)
+=======
+        dbManifest = await dagNode.read(ipfs1, db.address.root)
+        const hash = dbManifest.accessController.split('/').pop()
+        acManifest = await dagNode.read(ipfs1, hash)
+>>>>>>> Use io module
       })
 
       it('has the correct access rights after creating the database', async () => {

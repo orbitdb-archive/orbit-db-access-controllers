@@ -10,8 +10,7 @@ class AccessControllerManifest {
     // TODO: ensure this is a valid multihash
     if (manifestHash.indexOf('/ipfs') === 0) { manifestHash = manifestHash.split('/')[2] }
 
-    const dag = await dagNode.read(ipfs, manifestHash, [])
-    const data = JSON.parse(dag)
+    const data = await dagNode.read(ipfs, manifestHash)
     const { type, params } = data.type ? data : { type: 'ipfs', params: { address: manifestHash } }
     return new AccessControllerManifest(type, params)
   }
@@ -21,9 +20,13 @@ class AccessControllerManifest {
       type: type,
       params: params
     }
+<<<<<<< HEAD
     const buffer = Buffer.from(JSON.stringify(manifest))
     const dag = await ipfs.object.put(buffer)
     return dag.toJSON().multihash.toString()
+=======
+    return dagNode.write(ipfs, 'dag-cbor', manifest)
+>>>>>>> Use io module
   }
 }
 
