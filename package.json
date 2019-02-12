@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
   "dependencies": {
+    "orbit-db-io": "0.0.1",
     "p-map-series": "^1.0.0"
   },
   "devDependencies": {
@@ -39,7 +40,7 @@
     "ipfs-repo": "^0.26.1",
     "ipfsd-ctl": "^0.40.3",
     "mocha": "^5.2.0",
-    "orbit-db": "https://github.com/orbitdb/orbit-db#orbit-db-access-controller",
+    "orbit-db": "https://github.com/orbitdb/orbit-db#feat/backwards-compatible",
     "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider",
     "orbit-db-keystore": "github:orbitdb/orbit-db-keystore",
     "standard": "^12.0.1",

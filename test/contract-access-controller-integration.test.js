@@ -11,7 +11,7 @@ const ContractAccessController = require('../src/contract-access-controller')
 const DepositContractAccessController = require('../src/deposit-contract-access-controller')
 const ganache = require('ganache-cli')
 const Web3 = require('web3')
-const dagNode = require('orbit-db-io')
+const io = require('orbit-db-io')
 // Include test utilities
 const {
   config,
@@ -133,17 +133,9 @@ Object.keys(testAPIs).forEach(API => {
 
           await db2.load()
 
-<<<<<<< HEAD
-          dag = await ipfs1.object.get(db.address.root)
-          dbManifest = JSON.parse(dag.toJSON().data)
+          dbManifest = await io.read(ipfs1, db.address.root)
           const hash = dbManifest.accessController.split('/').pop()
-          const acManifestDag = await ipfs1.object.get(hash)
-          acManifest = JSON.parse(acManifestDag.toJSON().data)
-=======
-          dbManifest = await dagNode.read(ipfs1, db.address.root)
-          const hash = dbManifest.accessController.split('/').pop()
-          acManifest = await dagNode.read(ipfs1, hash)
->>>>>>> Use io module
+          acManifest = await io.read(ipfs1, hash)
         })
 
         it('makes database use the correct access controller', async () => {

@@ -1,7 +1,6 @@
 'use strict'
 const isValidEthAddress = require('./utils/is-valid-eth-address')
 const AccessController = require('./access-controller-interface')
-
 const type = 'eth-contract/cool-contract'
 
 class ContractAccessController extends AccessController {
@@ -77,7 +76,7 @@ class ContractAccessController extends AccessController {
       throw new Error(`No 'contractAddress' given in options`)
     }
     if (!options.defaultAccount) {
-      console.warning('WARNING: no defaultAccount set')
+      console.warn('WARNING: no defaultAccount set')
     }
 
     return new ContractAccessController(

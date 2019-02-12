@@ -68,13 +68,13 @@ Object.keys(testAPIs).forEach(API => {
       accounts = await web3.eth.getAccounts()
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath2,
         identity: id2
       })

@@ -1,4 +1,5 @@
 'use strict'
+const io = require('orbit-db-io')
 
 class AccessControllerManifest {
   constructor (type, params = {}) {
@@ -10,8 +11,8 @@ class AccessControllerManifest {
     // TODO: ensure this is a valid multihash
     if (manifestHash.indexOf('/ipfs') === 0) { manifestHash = manifestHash.split('/')[2] }
 
-    const data = await dagNode.read(ipfs, manifestHash)
-    const { type, params } = data.type ? data : { type: 'ipfs', params: { address: manifestHash } }
+    const data = await io.read(ipfs, manifestHash)
+    const { type, params } = data.type ? data : { type: 'ipfs', params: { address: manifestHash } } // check data shape for backwards-compatibility
     return new AccessControllerManifest(type, params)
   }
 
@@ -20,13 +21,7 @@ class AccessControllerManifest {
       type: type,
       params: params
     }
-<<<<<<< HEAD
-    const buffer = Buffer.from(JSON.stringify(manifest))
-    const dag = await ipfs.object.put(buffer)
-    return dag.toJSON().multihash.toString()
-=======
-    return dagNode.write(ipfs, 'dag-cbor', manifest)
->>>>>>> Use io module
+    return io.write(ipfs, 'dag-cbor', manifest)
   }
 }
 
