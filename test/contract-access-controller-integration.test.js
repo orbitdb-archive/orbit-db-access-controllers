@@ -66,19 +66,16 @@ Object.keys(testAPIs).forEach(API => {
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
 
-      let options = {
-        AccessControllers: [ ContractAccessController, DepositContractAccessController ]
-      }
-      AccessControllers.addAccessControllers(options)
+      accessControllers.forEach(ac => AccessControllers.addAccessController(ac))
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath1,
         identity: id1
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
-        ACFactory: AccessControllers,
+        AccessControllers: AccessControllers,
         directory: dbPath2,
         identity: id2
       })
