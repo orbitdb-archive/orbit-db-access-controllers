@@ -20,7 +20,8 @@ class IPFSAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
-    if (this.write.includes(entry.identity.publicKey) ||
+    const publicKey = entry.v === 0 ? entry.key : entry.identity.publicKey
+    if (this.write.includes(publicKey) ||
       this.write.includes('*')) {
       return true
     }
@@ -34,7 +35,7 @@ class IPFSAccessController extends AccessController {
 
     try {
       const access = await io.read(this._ipfs, address)
-      this._write = access.write
+      this._write = JSON.parse(access.write)
     } catch (e) {
       console.log('IPFSAccessController.load ERROR:', e)
     }
@@ -43,7 +44,9 @@ class IPFSAccessController extends AccessController {
   async save () {
     let cid
     try {
-      cid = await io.write(this._ipfs, 'dag-cbor', { write: this.write })
+
+      cid = await io.write(this._ipfs, 'dag-cbor', { write: JSON.stringify(this.write, null, 2) })
+
     } catch (e) {
       console.log('IPFSAccessController.save ERROR:', e)
     }

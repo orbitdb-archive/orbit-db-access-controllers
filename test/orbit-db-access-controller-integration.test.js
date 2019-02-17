@@ -6,7 +6,7 @@ const OrbitDB = require('orbit-db')
 const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
-const { io } = require('../src/utils')
+const io = require('orbit-db-io')
 // Include test utilities
 const {
   config,

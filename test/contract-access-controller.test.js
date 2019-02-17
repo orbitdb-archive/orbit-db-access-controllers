@@ -11,7 +11,7 @@ const DepositContractAccessController = require('../src/deposit-contract-access-
 const AccessControllers = require('../')
 const Web3 = require('web3')
 const ganache = require('ganache-cli')
-
+const io = require('orbit-db-io')
 // Include test utilities
 const {
   config,
@@ -160,17 +160,17 @@ Object.keys(testAPIs).forEach(API => {
               defaultAccount: accounts[i]
             })
             manifest = await accessController.save()
+            const access = await io.read(ipfs1, manifest.address)
 
-            accessController = null
             accessController = await ac.AccessController.create(orbitdb1, {
               type: ac.AccessController.type,
               web3: web3,
-              abi: manifest.abi,
-              contractAddress: manifest.contractAddress,
+              abi: JSON.parse(access.abi),
+              contractAddress: access.contractAddress,
               defaultAccount: accounts[i]
             })
 
-            await accessController.load()
+            await accessController.load(manifest.address)
           })
 
           it('has correct capabalities', async () => {

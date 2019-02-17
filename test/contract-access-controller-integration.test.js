@@ -102,7 +102,7 @@ Object.keys(testAPIs).forEach(API => {
     describe('OrbitDB Integration', function () {
       accessControllers.forEach(async (ac, i) => {
         let db, db2
-        let dbManifest, acManifest
+        let dbManifest, acManifest, access
         let contract
 
         before(async () => {
@@ -136,10 +136,11 @@ Object.keys(testAPIs).forEach(API => {
           dbManifest = await io.read(ipfs1, db.address.root)
           const hash = dbManifest.accessController.split('/').pop()
           acManifest = await io.read(ipfs1, hash)
+          access = await io.read(ipfs1, acManifest.params.address)
         })
 
         it('makes database use the correct access controller', async () => {
-          assert.strictEqual(acManifest.params.contractAddress, db.access.address)
+          assert.strictEqual(access.contractAddress, db.access.address)
         })
 
         it('saves database manifest file locally', async () => {
@@ -171,8 +172,8 @@ Object.keys(testAPIs).forEach(API => {
           })
 
           it('has correct address', async () => {
-            assert.strictEqual(acManifest.params.contractAddress.indexOf('0x'), 0)
-            assert.strictEqual(acManifest.params.contractAddress, db.access.address)
+            assert.strictEqual(access.contractAddress.indexOf('0x'), 0)
+            assert.strictEqual(access.contractAddress, db.access.address)
           })
         })
 

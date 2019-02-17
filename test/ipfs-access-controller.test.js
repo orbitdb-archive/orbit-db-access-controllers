@@ -107,7 +107,8 @@ Object.keys(testAPIs).forEach(API => {
 
       it('allows owner to append after creation', async () => {
         const mockEntry = {
-          identity: id1
+          identity: id1,
+          v: 1
           // ...
           // doesn't matter what we put here, only identity is used for the check
         }
