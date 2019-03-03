@@ -1,5 +1,5 @@
 'use strict'
-const io = require('orbit-db-io')
+const { io } = require('./utils')
 const AccessController = require('./access-controller-interface')
 const type = 'ipfs'
 
@@ -34,8 +34,7 @@ class IPFSAccessController extends AccessController {
     if (address.indexOf('/ipfs') === 0) { address = address.split('/')[2] }
 
     try {
-      const access = await io.read(this._ipfs, address)
-      this._write = JSON.parse(access.write)
+      this._write = await io.read(this._ipfs, address)
     } catch (e) {
       console.log('IPFSAccessController.load ERROR:', e)
     }
