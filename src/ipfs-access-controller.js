@@ -25,8 +25,9 @@ class IPFSAccessController extends AccessController {
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
     const publicKey = entry.v === 0 ? entry.key : entry.identity.publicKey
-    if (entry.identity && entry.identity.type === 'orbitdb') {
-      let decompressed = await identityProvider._keystore.decompressPublicKey(publicKey)
+    const ks = identityProvider._keystore
+    if (entry.identity && entry.identity.type === 'orbitdb' && ks.decompressPublicKey) {
+      let decompressed = await ks.decompressPublicKey(publicKey)
       if (this.write.includes(decompressed)) {
         return true
       }
