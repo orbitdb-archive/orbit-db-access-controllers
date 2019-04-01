@@ -56,8 +56,8 @@ Object.keys(testAPIs).forEach(API => {
       ipfs1 = ipfsd1.api
       ipfs2 = ipfsd2.api
 
-      const keystore1 = await Keystore.create(dbPath1 + '/keys')
-      const keystore2 = await Keystore.create(dbPath2 + '/keys')
+      const keystore1 = Keystore.create(dbPath1 + '/keys')
+      const keystore2 = Keystore.create(dbPath2 + '/keys')
       IdentityProvider.addIdentityProvider(EthIdentityProvider)
 
       id1 = await IdentityProvider.createIdentity({ type: 'ethereum', keystore: keystore1 })
