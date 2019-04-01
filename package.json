@@ -40,7 +40,7 @@
     "ipfs-repo": "^0.26.1",
     "ipfsd-ctl": "^0.40.3",
     "mocha": "^5.2.0",
-    "orbit-db": "https://github.com/orbitdb/orbit-db#feat/backwards-compatible",
+    "orbit-db": "https://github.com/orbitdb/orbit-db#libp2p",
     "orbit-db-identity-provider": "rc1",
     "orbit-db-keystore": "rc1",
     "standard": "^12.0.1",
