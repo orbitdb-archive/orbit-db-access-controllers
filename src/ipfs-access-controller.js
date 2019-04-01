@@ -3,6 +3,10 @@ const { io } = require('./utils')
 const AccessController = require('./access-controller-interface')
 const type = 'ipfs'
 
+const decompress = (identity) => {
+  identity.type === 'orbitdb' && identity.publicKey.length > 66
+}
+
 class IPFSAccessController extends AccessController {
   constructor (ipfs, options) {
     super()
@@ -21,6 +25,13 @@ class IPFSAccessController extends AccessController {
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
     const publicKey = entry.v === 0 ? entry.key : entry.identity.publicKey
+    const ks = identityProvider._keystore
+    if (entry.identity && entry.identity.type === 'orbitdb' && ks.decompressPublicKey) {
+      let decompressed = await ks.decompressPublicKey(publicKey)
+      if (this.write.includes(decompressed)) {
+        return true
+      }
+    }
     if (this.write.includes(publicKey) ||
       this.write.includes('*')) {
       return true
