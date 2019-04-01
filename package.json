@@ -42,7 +42,7 @@
     "mocha": "^5.2.0",
     "orbit-db": "https://github.com/orbitdb/orbit-db#libp2p",
     "orbit-db-identity-provider": "github:orbitdb/orbit-db-identity-provider#libp2p",
-    "orbit-db-keystore": "github:orbitdb/orbit-db-keystore",
+    "orbit-db-keystore": "rc1",
     "standard": "^12.0.1",
     "web3": "1.0.0-beta.37"
   },
