@@ -38,7 +38,7 @@ class OrbitDBAccessController extends AccessController {
 
   get capabilities () {
     if (this._db) {
-      let capabilities = this._db._index._index
+      let capabilities = this._db.index
 
       const toSet = (e) => {
         const key = e[0]
