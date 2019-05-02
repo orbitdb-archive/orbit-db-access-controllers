@@ -8,6 +8,7 @@ class IPFSAccessController extends AccessController {
     super()
     this._ipfs = ipfs
     this._write = Array.from(options.write || [])
+    this._legacy = options.legacy
   }
 
   // Returns the type of the access controller
@@ -42,9 +43,18 @@ class IPFSAccessController extends AccessController {
 
   async save () {
     let cid
+    let access
+    let codec
+    if (!this._legacy) {
+      access = { write: JSON.stringify(this.write, null, 2) }
+      codec = 'dag-cbor'
+    } else {
+      access = { admin: [], write: this.write, read: [] }
+      codec = 'dag-pb'
+    }
     try {
 
-      cid = await io.write(this._ipfs, 'dag-cbor', { write: JSON.stringify(this.write, null, 2) })
+      cid = await io.write(this._ipfs, codec, access, { legacy: this._legacy })
 
     } catch (e) {
       console.log('IPFSAccessController.save ERROR:', e)

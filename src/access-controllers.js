@@ -61,6 +61,9 @@ class AccessControllers {
     const AccessController = getHandlerFor(type)
     const ac = await AccessController.create(orbitdb, options)
     const params = await ac.save()
+    if (options.legacy) {
+      return params.address
+    }
     const hash = await AccessControllerManifest.create(orbitdb._ipfs, type, params)
     return hash
   }
