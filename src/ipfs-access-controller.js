@@ -20,13 +20,13 @@ class IPFSAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
-    const publicKey = entry.v === 0 ? entry.key : entry.identity.publicKey
-    if (this.write.includes(publicKey) ||
-      this.write.includes('*')) {
-      return true
+    const publicKey = entry.v === 0 ? entry.key : entry.identity.id
+    if (this.write.includes(publicKey) || this.write.includes('*')) {
+      return entry.v === 1 ? await identityProvider.verifyIdentity(entry.identity) : true
     }
     return false
   }
+
 
   async load (address) {
     // Transform '/ipfs/QmPFtHi3cmfZerxtH9ySLdzpg1yFhocYDZgEZywdUXHxFU'
