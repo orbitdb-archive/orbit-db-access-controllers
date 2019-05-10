@@ -85,7 +85,7 @@ Object.keys(testAPIs).forEach(API => {
           identity: id1,
           accessController: {
             type: 'orbitdb',
-            write: [id1.publicKey]
+            write: [id1.id]
           }
         })
 
@@ -99,8 +99,8 @@ Object.keys(testAPIs).forEach(API => {
 
       it('has the correct access rights after creating the database', async () => {
         assert.deepStrictEqual(db.access.capabilities, {
-          admin: new Set([id1.publicKey]),
-          write: new Set([id1.publicKey])
+          admin: new Set([id1.id]),
+          write: new Set([id1.id])
         })
       })
 
@@ -168,7 +168,7 @@ Object.keys(testAPIs).forEach(API => {
                   await db2.add('hello!')
                 })
                 // Give access to the second user
-                await db.access.grant('write', id2.publicKey)
+                await db.access.grant('write', id2.id)
               } catch (e) {
                 reject(e)
               }
@@ -184,7 +184,7 @@ Object.keys(testAPIs).forEach(API => {
         it('can\'t grant access if doesn\'t have write access', async () => {
           let err
           try {
-            await db2.access.grant('write', id2.publicKey)
+            await db2.access.grant('write', id2.id)
           } catch (e) {
             err = e.toString()
           }
@@ -194,7 +194,7 @@ Object.keys(testAPIs).forEach(API => {
         it('can\'t revoke access if doesn\'t have write access', async () => {
           let err
           try {
-            await db2.access.revoke('write', id1.publicKey)
+            await db2.access.revoke('write', id1.id)
           } catch (e) {
             err = e.toString()
           }
@@ -217,7 +217,7 @@ Object.keys(testAPIs).forEach(API => {
                   resolve(err)
                 })
                 // Revoke user's access
-                await db.access.revoke('write', id2.publicKey)
+                await db.access.revoke('write', id2.id)
               } catch (e) {
                 reject(e)
               }

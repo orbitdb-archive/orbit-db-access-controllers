@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
   "dependencies": {
-    "orbit-db-io": "~0.0.1",
+    "orbit-db-io": "github:orbitdb/orbit-db-io#feat/pass-format",
     "p-map-series": "^1.0.0"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "ipfs-repo": "^0.26.1",
     "ipfsd-ctl": "^0.40.3",
     "mocha": "^5.2.0",
-    "orbit-db": "0.20.0",
+    "orbit-db": "~0.20.0",
     "orbit-db-identity-provider": "~0.1.0",
     "orbit-db-keystore": "~0.2.0",
     "standard": "^12.0.1",

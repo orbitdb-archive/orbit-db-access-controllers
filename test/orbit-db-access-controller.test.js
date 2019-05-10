@@ -106,7 +106,7 @@ Object.keys(testAPIs).forEach(API => {
 
       it('sets default capabilities', async () => {
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey])
+          admin: new Set([id1.id])
         })
       })
 
@@ -131,18 +131,18 @@ Object.keys(testAPIs).forEach(API => {
 
       it('loads the root access controller from IPFS', () => {
         assert.strictEqual(accessController._db.access.type, 'ipfs')
-        assert.deepStrictEqual(accessController._db.access.write, [id1.publicKey])
+        assert.deepStrictEqual(accessController._db.access.write, [id1.id])
       })
 
       it('adds a capability', async () => {
         try {
-          await accessController.grant('write', id1.publicKey)
+          await accessController.grant('write', id1.id)
         } catch (e) {
           assert(e, null)
         }
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey]),
-          write: new Set([id1.publicKey])
+          admin: new Set([id1.id]),
+          write: new Set([id1.id])
         })
       })
 
@@ -154,8 +154,8 @@ Object.keys(testAPIs).forEach(API => {
           assert.strictEqual(e, null)
         }
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey]),
-          write: new Set([id1.publicKey]),
+          admin: new Set([id1.id]),
+          write: new Set([id1.id]),
           read: new Set(['ABCD']),
           delete: new Set(['ABCD'])
         })
@@ -166,8 +166,8 @@ Object.keys(testAPIs).forEach(API => {
           accessController.on('updated', () => {
             try {
               assert.deepStrictEqual(accessController.capabilities, {
-                admin: new Set([id1.publicKey]),
-                write: new Set([id1.publicKey]),
+                admin: new Set([id1.id]),
+                write: new Set([id1.id]),
                 read: new Set(['ABCD', 'AXES']),
                 delete: new Set(['ABCD'])
               })
@@ -182,8 +182,8 @@ Object.keys(testAPIs).forEach(API => {
 
       it('can append after acquiring capability', async () => {
         try {
-          await accessController.grant('write', id1.publicKey)
-          await accessController.grant('write', id2.publicKey)
+          await accessController.grant('write', id1.id)
+          await accessController.grant('write', id2.id)
         } catch (e) {
           assert(e, null)
         }
@@ -210,37 +210,37 @@ Object.keys(testAPIs).forEach(API => {
 
       it('removes a capability', async () => {
         try {
-          await accessController.grant('write', id1.publicKey)
+          await accessController.grant('write', id1.id)
           await accessController.grant('write', 'AABB')
           await accessController.revoke('write', 'AABB')
         } catch (e) {
           assert.strictEqual(e, null)
         }
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey]),
-          write: new Set([id1.publicKey])
+          admin: new Set([id1.id]),
+          write: new Set([id1.id])
         })
       })
 
       it('can remove the creator\'s write access', async () => {
         try {
-          await accessController.revoke('write', id1.publicKey)
+          await accessController.revoke('write', id1.id)
         } catch (e) {
           assert.strictEqual(e, null)
         }
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey])
+          admin: new Set([id1.id])
         })
       })
 
       it('can\'t remove the creator\'s admin access', async () => {
         try {
-          await accessController.revoke('admin', id1.publicKey)
+          await accessController.revoke('admin', id1.id)
         } catch (e) {
           assert.strictEqual(e, null)
         }
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey])
+          admin: new Set([id1.id])
         })
       })
 
@@ -248,24 +248,24 @@ Object.keys(testAPIs).forEach(API => {
         try {
           await accessController.grant('read', 'ABCD')
           await accessController.grant('delete', 'ABCD')
-          await accessController.grant('write', id1.publicKey)
+          await accessController.grant('write', id1.id)
           await accessController.revoke('read', 'ABCDE')
           await accessController.revoke('delete', 'ABCDE')
         } catch (e) {
           assert.strictEqual(e, null)
         }
         assert.deepStrictEqual(accessController.capabilities, {
-          admin: new Set([id1.publicKey]),
+          admin: new Set([id1.id]),
           delete: new Set(['ABCD']),
           read: new Set(['ABCD']),
-          write: new Set([id1.publicKey])
+          write: new Set([id1.id])
         })
       })
 
       it('can\'t append after revoking capability', async () => {
         try {
-          await accessController.grant('write', id2.publicKey)
-          await accessController.revoke('write', id2.publicKey)
+          await accessController.grant('write', id2.id)
+          await accessController.revoke('write', id2.id)
         } catch (e) {
           assert(e, null)
         }
@@ -289,10 +289,10 @@ Object.keys(testAPIs).forEach(API => {
           accessController.on('updated', () => {
             try {
               assert.deepStrictEqual(accessController.capabilities, {
-                admin: new Set([id1.publicKey, 'dogs']),
+                admin: new Set([id1.id, 'dogs']),
                 delete: new Set(['ABCD']),
                 read: new Set(['ABCD']),
-                write: new Set([id1.publicKey])
+                write: new Set([id1.id])
               })
               resolve()
             } catch (e) {
@@ -318,7 +318,7 @@ Object.keys(testAPIs).forEach(API => {
         await accessController.grant('another', 'AA')
         await accessController.grant('another', 'BB')
         await accessController.revoke('another', 'AA')
-        await accessController.grant('admin', id1.publicKey)
+        await accessController.grant('admin', id1.id)
         return new Promise(async (resolve) => {
           // Test that the access controller emits 'updated' after it was loaded
           accessController.on('updated', () => resolve())
@@ -333,7 +333,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('has correct capabalities', async () => {
-        assert.deepStrictEqual(accessController.get('admin'), new Set([id1.publicKey]))
+        assert.deepStrictEqual(accessController.get('admin'), new Set([id1.id]))
         assert.deepStrictEqual(accessController.get('write'), new Set(['A', 'B', 'C']))
         assert.deepStrictEqual(accessController.get('another'), new Set(['BB']))
       })

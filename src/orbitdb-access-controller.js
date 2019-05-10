@@ -119,7 +119,7 @@ class OrbitDBAccessController extends AccessController {
   /* Factory */
   static async create (orbitdb, options = {}) {
     const ac = new OrbitDBAccessController(orbitdb, options)
-    await ac.load(options.address || 'default-access-controller')
+    await ac.load(options.address || options.name || 'default-access-controller')
 
     // Add write access from options
     if (options.write && !options.address) {

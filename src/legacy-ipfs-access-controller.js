@@ -1,9 +1,10 @@
 'use strict'
-const { io } = require('./utils')
+const io = require('orbit-db-io')
+const Buffer = require('safe-buffer/').Buffer
 const AccessController = require('./access-controller-interface')
-const type = 'ipfs'
+const type = 'legacy-ipfs'
 
-class IPFSAccessController extends AccessController {
+class LegacyIPFSAccessController extends AccessController {
   constructor (ipfs, options) {
     super()
     this._ipfs = ipfs
@@ -20,14 +21,13 @@ class IPFSAccessController extends AccessController {
 
   async canAppend (entry, identityProvider) {
     // Allow if access list contain the writer's publicKey or is '*'
-    const key = entry.identity.id
-    if (this.write.includes(key) || this.write.includes('*')) {
-      //check identity is valid
-      return identityProvider.verifyIdentity(entry.identity)
+    const publicKey = entry.key
+    if (this.write.includes(publicKey) ||
+      this.write.includes('*')) {
+      return true
     }
     return false
   }
-
 
   async load (address) {
     // Transform '/ipfs/QmPFtHi3cmfZerxtH9ySLdzpg1yFhocYDZgEZywdUXHxFU'
@@ -35,29 +35,30 @@ class IPFSAccessController extends AccessController {
     if (address.indexOf('/ipfs') === 0) { address = address.split('/')[2] }
 
     try {
-      this._write = await io.read(this._ipfs, address)
+      const access = await io.read(this._ipfs, address)
+      this._write = access.write
     } catch (e) {
-      console.log('IPFSAccessController.load ERROR:', e)
+      console.log('LegacyIPFSAccessController.load ERROR:', e)
     }
   }
 
-  async save () {
+  async save (options) {
     let cid
+    const access = { admin: [], write: this.write, read: [] }
     try {
-
-      cid = await io.write(this._ipfs, 'dag-cbor', { write: JSON.stringify(this.write, null, 2) })
+      cid = await io.write(this._ipfs, 'raw', Buffer.from(JSON.stringify(access, null, 2)), { format: 'dag-pb'})
 
     } catch (e) {
-      console.log('IPFSAccessController.save ERROR:', e)
+      console.log('LegacyIPFSAccessController.save ERROR:', e)
     }
     // return the manifest data
     return { address: cid }
   }
 
   static async create (orbitdb, options = {}) {
-    options = { ...options, ...{ write: options.write || [orbitdb.identity.id] } }
-    return new IPFSAccessController(orbitdb._ipfs, options)
+    options = { ...options, ...{ write: options.write || [orbitdb.identity.publicKey] } }
+    return new LegacyIPFSAccessController(orbitdb._ipfs, options)
   }
 }
 
-module.exports = IPFSAccessController
+module.exports = LegacyIPFSAccessController
