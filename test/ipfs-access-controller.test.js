@@ -82,7 +82,7 @@ Object.keys(testAPIs).forEach(API => {
 
       before(async () => {
         accessController = await IPFSAccessController.create(orbitdb1, {
-          write: [id1.publicKey]
+          write: [id1.id]
         })
       })
 
@@ -102,7 +102,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('sets default capabilities', async () => {
-        assert.deepStrictEqual(accessController.write, [id1.publicKey])
+        assert.deepStrictEqual(accessController.write, [id1.id])
       })
 
       it('allows owner to append after creation', async () => {
@@ -122,14 +122,14 @@ Object.keys(testAPIs).forEach(API => {
 
       before(async () => {
         accessController = await IPFSAccessController.create(orbitdb1, {
-          write: ['A', 'B', id1.publicKey]
+          write: ['A', 'B', id1.id]
         })
         manifest = await accessController.save()
         await accessController.load(manifest.address)
       })
 
       it('has correct capabalities', async () => {
-        assert.deepStrictEqual(accessController.write, ['A', 'B', id1.publicKey])
+        assert.deepStrictEqual(accessController.write, ['A', 'B', id1.id])
       })
     })
   })

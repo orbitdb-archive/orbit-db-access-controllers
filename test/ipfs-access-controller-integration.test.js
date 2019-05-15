@@ -77,7 +77,7 @@ Object.keys(testAPIs).forEach(API => {
           identity: id1,
           accessController: {
             type: 'ipfs',
-            write: [id1.publicKey]
+            write: [id1.id]
           }
         })
 
@@ -92,7 +92,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('has the correct access rights after creating the database', async () => {
-        assert.deepStrictEqual(db.access.write, [id1.publicKey])
+        assert.deepStrictEqual(db.access.write, [id1.id])
       })
 
       it('makes database use the correct access controller', async () => {

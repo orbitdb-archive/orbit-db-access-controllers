@@ -27,7 +27,7 @@ class OrbitDBAccessController extends AccessController {
     // Write keys and admins keys are allowed
     const access = new Set([...this.get('write'), ...this.get('admin')])
     // If the ACL contains the writer's public key or it contains '*'
-    if (access.has(entry.identity.publicKey) || access.has('*')) {
+    if (access.has(entry.identity.id) || access.has('*')) {
       const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
       // Allow access if identity verifies
       return verifiedIdentity
@@ -76,7 +76,7 @@ class OrbitDBAccessController extends AccessController {
       // use ipfs controller as a immutable "root controller"
       accessController: {
         type: 'ipfs',
-        write: this._options.admin || [this._orbitdb.identity.publicKey]
+        write: this._options.admin || [this._orbitdb.identity.id]
       },
       sync: true
     })
@@ -119,7 +119,7 @@ class OrbitDBAccessController extends AccessController {
   /* Factory */
   static async create (orbitdb, options = {}) {
     const ac = new OrbitDBAccessController(orbitdb, options)
-    await ac.load(options.address || 'default-access-controller')
+    await ac.load(options.address || options.name || 'default-access-controller')
 
     // Add write access from options
     if (options.write && !options.address) {

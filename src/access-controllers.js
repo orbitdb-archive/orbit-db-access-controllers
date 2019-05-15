@@ -1,10 +1,12 @@
 'use strict'
 
 const AccessControllerManifest = require('./access-controller-manifest')
+const LegacyIPFSAccessController = require('./legacy-ipfs-access-controller')
 const IPFSAccessController = require('./ipfs-access-controller')
 const OrbitDBAccessController = require('./orbitdb-access-controller')
 
 let supportedTypes = {
+  'legacy-ipfs': LegacyIPFSAccessController,
   'ipfs': IPFSAccessController,
   'orbitdb': OrbitDBAccessController
 }
