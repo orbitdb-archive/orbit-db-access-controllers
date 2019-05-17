@@ -52,7 +52,7 @@ class LegacyIPFSAccessController extends AccessController {
       console.log('LegacyIPFSAccessController.save ERROR:', e)
     }
     // return the manifest data
-    return { address: cid }
+    return { address: cid, skipManifest: true }
   }
 
   static async create (orbitdb, options = {}) {
