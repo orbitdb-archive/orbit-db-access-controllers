@@ -51,8 +51,8 @@ class AccessControllers {
     delete supportedTypes[type]
   }
 
-  static async resolve (orbitdb, manifestAddress, options) {
-    const { type, params } = await AccessControllerManifest.resolve(orbitdb._ipfs, manifestAddress)
+  static async resolve (orbitdb, manifestAddress, options = {}) {
+    const { type, params } = await AccessControllerManifest.resolve(orbitdb._ipfs, manifestAddress, options)
     const AccessController = getHandlerFor(type)
     const accessController = await AccessController.create(orbitdb, Object.assign({}, options, params))
     await accessController.load(params.address)
