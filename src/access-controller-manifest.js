@@ -17,7 +17,7 @@ class AccessControllerManifest {
   }
 
   static async create (ipfs, type, params) {
-    if (type === 'legacy-ipfs') {
+    if (params.skipManifest) {
       return params.address
     }
     const manifest = {
