@@ -22,7 +22,7 @@ const ipfsPath1 = './orbitdb/tests/ipfs-access-controller/1/ipfs'
 const ipfsPath2 = './orbitdb/tests/ipfs-access-controller/2/ipfs'
 
 Object.keys(testAPIs).forEach(API => {
-  describe('orbit-db - IPFSAccessController', function () {
+  describe(`orbit-db - IPFSAccessController (${API})`, function () {
     this.timeout(config.timeout)
 
     let ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
