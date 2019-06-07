@@ -1,6 +1,6 @@
 {
   "name": "orbit-db-access-controllers",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Access Controllers for OrbitDB",
   "keywords": [
     "orbit",
@@ -40,7 +40,7 @@
     "ipfs-repo": "~0.26.6",
     "ipfsd-ctl": "~0.42.4",
     "mocha": "^5.2.0",
-    "orbit-db": "github:orbitdb/orbit-db#feat/ipfs-0.36.x",
+    "orbit-db": "github:orbitdb/orbit-db",
     "orbit-db-identity-provider": "~0.1.0",
     "orbit-db-keystore": "~0.2.1",
     "standard": "^12.0.1",
