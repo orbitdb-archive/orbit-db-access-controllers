@@ -1,6 +1,6 @@
 {
   "name": "orbit-db-access-controllers",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Access Controllers for OrbitDB",
   "keywords": [
     "orbit",
