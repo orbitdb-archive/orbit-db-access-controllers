@@ -37,7 +37,7 @@ const accessControllers = [
 ]
 
 Object.keys(testAPIs).forEach(API => {
-  describe('orbit-db - ContractAccessController Integration', function () {
+  describe(`orbit-db - ContractAccessController Integration (${API})`, function () {
     this.timeout(config.timeout)
 
     let ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
