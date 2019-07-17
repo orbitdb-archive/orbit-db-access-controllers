@@ -21,6 +21,12 @@ class ContractAccessController extends AccessController {
   get address () {
     return this.contractAddress
   }
+  
+  get definedCapabilities () {
+   return {
+     grant: true,
+     revoke: true
+  }
 
   async load (address) {
     if (address) {
