@@ -40,8 +40,8 @@ class AccessController extends EventEmitter {
   async canAppend (entry, identityProvider) {}
 
   /* Add and remove access */
-  async grant (access, identity) { return false; }
-  async revoke (access, identity) { return false; }
+  async grant (access, identity) { return false }
+  async revoke (access, identity) { return false }
 
   /* AC creation and loading */
   async load (address) {}
