@@ -23,7 +23,7 @@ class DepositContractAccessController extends AccessController {
     return this.contractAddress
   }
 
-  get definedCapabilities () {
+  static get definedCapabilities () {
     return {
       grant: true,
       revoke: true

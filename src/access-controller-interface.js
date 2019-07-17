@@ -35,7 +35,7 @@ class AccessController extends EventEmitter {
   /*
     Define what optional functions are actually implemented in this controller
   */
-  get definedCapabilities () {
+ static get definedCapabilities () {
     return {
       grant: false,
       revoke: false

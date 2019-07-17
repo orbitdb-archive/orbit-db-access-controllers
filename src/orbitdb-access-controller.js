@@ -64,7 +64,7 @@ class OrbitDBAccessController extends AccessController {
     return this.capabilities[capability] || new Set([])
   }
 
-  get definedCapabilities () {
+  static get definedCapabilities () {
     return {
       grant: true,
       revoke: true
