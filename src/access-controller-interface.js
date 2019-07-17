@@ -31,16 +31,17 @@ class AccessController extends EventEmitter {
 
   /* Each Access Controller has some address to anchor to */
   get address () {}
-  
+
   /*
     Define what optional functions are actually implemented in this controller
   */
   get definedCapabilities () {
-   return {
-     grant: false,
-     revoke: false
+    return {
+      grant: false,
+      revoke: false
+    }
   }
-    
+
   /*
     Called by the databases (the log) to see if entry should
     be allowed in the database. Return true if the entry is allowed,
