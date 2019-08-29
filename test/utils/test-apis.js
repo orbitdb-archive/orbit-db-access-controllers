@@ -6,7 +6,7 @@ const IPFS = require('ipfs')
 
 // Available daemon types are defined in:
 // https://github.com/ipfs/js-ipfsd-ctl#ipfsfactory---const-f--ipfsfactorycreateoptions
-let jsIpfs = {
+const jsIpfs = {
   'js-ipfs': {
     type: 'proc',
     exec: IPFS

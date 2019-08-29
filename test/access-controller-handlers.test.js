@@ -102,7 +102,7 @@ Object.keys(testAPIs).forEach(API => {
 
       before(async () => {
         web3 = new Web3(ganache.provider())
-        let accounts = await web3.eth.getAccounts()
+        const accounts = await web3.eth.getAccounts()
         contract = await new web3.eth.Contract(abi)
           .deploy({ data: bytecode })
           .send({ from: accounts[0], gas: '1000000' })

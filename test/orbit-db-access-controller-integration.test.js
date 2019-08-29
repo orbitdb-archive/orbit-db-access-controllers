@@ -155,7 +155,7 @@ Object.keys(testAPIs).forEach(API => {
           assert.strictEqual(err, `Error: Could not append entry, key "${db2.identity.id}" is not allowed to write to the log`)
 
           const doChanges = () => {
-            return new Promise(async (resolve, reject) => {
+            return new Promise((resolve, reject) => {
               try {
                 // Wait for the second user's AC to notify it was updated
                 db2.access.once('updated', async () => {
@@ -168,7 +168,7 @@ Object.keys(testAPIs).forEach(API => {
                   await db2.add('hello!')
                 })
                 // Give access to the second user
-                await db.access.grant('write', id2.id)
+                db.access.grant('write', id2.id)
               } catch (e) {
                 reject(e)
               }
@@ -203,7 +203,7 @@ Object.keys(testAPIs).forEach(API => {
 
         it('revoking access disables ability to write to the database', async () => {
           const getError = () => {
-            return new Promise(async (resolve, reject) => {
+            return new Promise((resolve, reject) => {
               try {
                 // Wait for the second user's AC to notify it was updated
                 db2.access.once('updated', async () => {
@@ -217,7 +217,7 @@ Object.keys(testAPIs).forEach(API => {
                   resolve(err)
                 })
                 // Revoke user's access
-                await db.access.revoke('write', id2.id)
+                db.access.revoke('write', id2.id)
               } catch (e) {
                 reject(e)
               }

@@ -46,8 +46,7 @@ class LegacyIPFSAccessController extends AccessController {
     let cid
     const access = { admin: [], write: this.write, read: [] }
     try {
-      cid = await io.write(this._ipfs, 'raw', Buffer.from(JSON.stringify(access, null, 2)), { format: 'dag-pb'})
-
+      cid = await io.write(this._ipfs, 'raw', Buffer.from(JSON.stringify(access, null, 2)), { format: 'dag-pb' })
     } catch (e) {
       console.log('LegacyIPFSAccessController.save ERROR:', e)
     }

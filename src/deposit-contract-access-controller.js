@@ -92,13 +92,13 @@ class DepositContractAccessController extends AccessController {
   // Factory
   static async create (orbitdb, options) {
     if (!options.web3) {
-      throw new Error(`No 'web3' given in options`)
+      throw new Error("No 'web3' given in options")
     }
     if (!options.abi && !options.address) {
-      throw new Error(`No 'abi' given in options`)
+      throw new Error("No 'abi' given in options")
     }
     if (!options.contractAddress && !options.address) {
-      throw new Error(`No 'contractAddress' given in options`)
+      throw new Error("No 'contractAddress' given in options")
     }
     if (!options.defaultAccount) {
       console.warn('WARNING: no defaultAccount set')

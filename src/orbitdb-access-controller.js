@@ -38,7 +38,7 @@ class OrbitDBAccessController extends AccessController {
 
   get capabilities () {
     if (this._db) {
-      let capabilities = this._db.index
+      const capabilities = this._db.index
 
       const toSet = (e) => {
         const key = e[0]
@@ -51,8 +51,7 @@ class OrbitDBAccessController extends AccessController {
         ...capabilities,
         // Add the root access controller's 'write' access list
         // as admins on this controller
-        ...{ admin: new Set([...(capabilities.admin || []), ...this._db.access.write])
-        }
+        ...{ admin: new Set([...(capabilities.admin || []), ...this._db.access.write]) }
       }).forEach(toSet)
 
       return capabilities
@@ -102,7 +101,7 @@ class OrbitDBAccessController extends AccessController {
   }
 
   async revoke (capability, key) {
-    let capabilities = new Set(this._db.get(capability) || [])
+    const capabilities = new Set(this._db.get(capability) || [])
     capabilities.delete(key)
     if (capabilities.size > 0) {
       await this._db.put(capability, Array.from(capabilities.values()))
