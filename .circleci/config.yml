@@ -12,7 +12,8 @@ jobs:
     steps:
       - checkout
       - run: mkdir -p /tmp/workspace
-      - run: rm -rf node_modules && rm -f package-lock.json && npm install
+      - run: make clean-dependencies
+      - run: make deps
       - run: cp -r index.js src node_modules test package.json /tmp/workspace
       - persist_to_workspace:
           root: /tmp/workspace
