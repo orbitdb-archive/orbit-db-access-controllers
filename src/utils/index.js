@@ -5,5 +5,5 @@ const io = require('./io.js')
 
 module.exports = {
   io,
-  isValidEthAddress,
+  isValidEthAddress
 }

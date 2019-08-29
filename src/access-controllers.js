@@ -5,10 +5,10 @@ const LegacyIPFSAccessController = require('./legacy-ipfs-access-controller')
 const IPFSAccessController = require('./ipfs-access-controller')
 const OrbitDBAccessController = require('./orbitdb-access-controller')
 
-let supportedTypes = {
+const supportedTypes = {
   'legacy-ipfs': LegacyIPFSAccessController,
-  'ipfs': IPFSAccessController,
-  'orbitdb': OrbitDBAccessController
+  ipfs: IPFSAccessController,
+  orbitdb: OrbitDBAccessController
 }
 
 const getHandlerFor = (type) => {

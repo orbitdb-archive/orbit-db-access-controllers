@@ -31,7 +31,7 @@ const startIpfs = (type, config = {}) => {
         // to make js-ipfs-api compatible with js-ipfs
         // TODO: Get IPFS id via coherent API call (without it being asynchronous)
         if (!ipfsd.api._peerInfo) {
-          let { id } = await ipfsd.api.id()
+          const { id } = await ipfsd.api.id()
           ipfsd.api._peerInfo = { id: { _idB58String: id } }
         }
 

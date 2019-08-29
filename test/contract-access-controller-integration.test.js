@@ -192,13 +192,13 @@ Object.keys(testAPIs).forEach(API => {
           it('granting access enables to write to the database', async () => {
             await db.access.grant('write', id1.id)
             const doChanges = () => {
-              return new Promise(async (resolve, reject) => {
+              return new Promise((resolve, reject) => {
                 try {
-                  await db.add('hello!')
                   db2.events.once('replicated', () => {
                     // FIXME: timeout to get rid of the "libp2p node not started yet" errors
                     setTimeout(() => resolve(), 1000)
                   })
+                  db.add('hello!')
                 } catch (e) {
                   reject(e)
                 }

@@ -162,7 +162,7 @@ Object.keys(testAPIs).forEach(API => {
       })
 
       it('emit \'updated\' event when a capability was added', async () => {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
           accessController.on('updated', () => {
             try {
               assert.deepStrictEqual(accessController.capabilities, {
@@ -176,7 +176,7 @@ Object.keys(testAPIs).forEach(API => {
               reject(e)
             }
           })
-          await accessController.grant('read', 'AXES')
+          accessController.grant('read', 'AXES')
         })
       })
 
@@ -285,7 +285,7 @@ Object.keys(testAPIs).forEach(API => {
         await accessController.grant('admin', 'cats')
         await accessController.grant('admin', 'dogs')
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
           accessController.on('updated', () => {
             try {
               assert.deepStrictEqual(accessController.capabilities, {
@@ -299,7 +299,7 @@ Object.keys(testAPIs).forEach(API => {
               reject(e)
             }
           })
-          await accessController.revoke('admin', 'cats')
+          accessController.revoke('admin', 'cats')
         })
       })
     })
@@ -319,10 +319,10 @@ Object.keys(testAPIs).forEach(API => {
         await accessController.grant('another', 'BB')
         await accessController.revoke('another', 'AA')
         await accessController.grant('admin', id1.id)
-        return new Promise(async (resolve) => {
+        return new Promise((resolve) => {
           // Test that the access controller emits 'updated' after it was loaded
           accessController.on('updated', () => resolve())
-          await accessController.load(accessController.address)
+          accessController.load(accessController.address)
         })
       })
 

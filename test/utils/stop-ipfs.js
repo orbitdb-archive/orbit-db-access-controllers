@@ -6,7 +6,7 @@
  * @return {None}
  */
 const stopIpfs = (ipfs) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     ipfs.stop((err) => {
       if (err) { reject(err) }
       resolve()

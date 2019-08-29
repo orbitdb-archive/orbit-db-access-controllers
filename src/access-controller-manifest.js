@@ -10,7 +10,7 @@ class AccessControllerManifest {
   static async resolve (ipfs, manifestHash, options = {}) {
     if (options.skipManifest) {
       if (!options.type) {
-        throw new Error(`No manifest, access-controller type required`)
+        throw new Error('No manifest, access-controller type required')
       }
       return new AccessControllerManifest(options.type, { address: manifestHash })
     } else {

@@ -17,7 +17,7 @@ class AccessController extends EventEmitter {
 
   /* Return the type for this controller */
   static get type () {
-    throw new Error(`'static get type ()' needs to be defined in the inheriting class`)
+    throw new Error('\'static get type ()\' needs to be defined in the inheriting class')
   }
 
   /*

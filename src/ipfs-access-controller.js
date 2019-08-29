@@ -22,12 +22,11 @@ class IPFSAccessController extends AccessController {
     // Allow if access list contain the writer's publicKey or is '*'
     const key = entry.identity.id
     if (this.write.includes(key) || this.write.includes('*')) {
-      //check identity is valid
+      // check identity is valid
       return identityProvider.verifyIdentity(entry.identity)
     }
     return false
   }
-
 
   async load (address) {
     // Transform '/ipfs/QmPFtHi3cmfZerxtH9ySLdzpg1yFhocYDZgEZywdUXHxFU'
@@ -44,9 +43,7 @@ class IPFSAccessController extends AccessController {
   async save () {
     let cid
     try {
-
       cid = await io.write(this._ipfs, 'dag-cbor', { write: JSON.stringify(this.write, null, 2) })
-
     } catch (e) {
       console.log('IPFSAccessController.save ERROR:', e)
     }
