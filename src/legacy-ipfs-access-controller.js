@@ -19,7 +19,7 @@ class LegacyIPFSAccessController extends AccessController {
     return this._write
   }
 
-  async canAppend (entry, identityProvider) {
+  async canAppend (entry) {
     // Allow if access list contain the writer's publicKey or is '*'
     const publicKey = entry.key
     if (this.write.includes(publicKey) ||

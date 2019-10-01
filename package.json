@@ -40,8 +40,8 @@
     "ipfs-repo": "~0.26.6",
     "ipfsd-ctl": "~0.42.4",
     "mocha": "^5.2.0",
-    "orbit-db": "~0.21.4",
-    "orbit-db-identity-provider": "~0.1.0",
+    "orbit-db": "orbitdb/orbit-db",
+    "orbit-db-identity-provider": "orbitdb/orbit-db-identity-provider#feat/rm-provider",
     "orbit-db-keystore": "~0.2.1",
     "standard": "^14.1.0",
     "web3": "1.0.0-beta.37"
