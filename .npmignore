@@ -2,3 +2,4 @@ node_modules/
 orbitdb/
 test/
 .circleci/
+Makefile
