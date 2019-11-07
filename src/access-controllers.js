@@ -1,5 +1,6 @@
 'use strict'
 
+const AccessController = require("./access-controller-interface")
 const AccessControllerManifest = require('./access-controller-manifest')
 const LegacyIPFSAccessController = require('./legacy-ipfs-access-controller')
 const IPFSAccessController = require('./ipfs-access-controller')
@@ -19,6 +20,9 @@ const getHandlerFor = (type) => {
 }
 
 class AccessControllers {
+  
+  static get AccessController () { return AccessController; }
+  
   static isSupported (type) {
     return Object.keys(supportedTypes).includes(type)
   }
