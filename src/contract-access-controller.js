@@ -56,12 +56,6 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${entry.identity.id}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    // const isPermitted = await this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
-    // if (isPermitted) {
-    //   const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
-    //   // Allow access if identity verifies
-    //   return Promise.resolve(verifiedIdentity)
-    // }
     return this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
   }
 

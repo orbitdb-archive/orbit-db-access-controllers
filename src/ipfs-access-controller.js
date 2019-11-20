@@ -22,7 +22,6 @@ class IPFSAccessController extends AccessController {
     // Allow if access list contain the writer's publicKey or is '*'
     const key = entry.identity.id
     if (this.write.includes(key) || this.write.includes('*')) {
-      // check identity is valid
       return true
     }
     return false

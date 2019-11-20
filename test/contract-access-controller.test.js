@@ -56,13 +56,12 @@ Object.keys(testAPIs).forEach(API => {
       ipfs1 = ipfsd1.api
       ipfs2 = ipfsd2.api
 
-      const keystore1 = Keystore.create(dbPath1 + '/keys')
-      const keystore2 = Keystore.create(dbPath2 + '/keys')
+      const keystore = new Keystore(dbPath1 + '/keys')
 
       IdentityProvider.addIdentityProvider(EthIdentityProvider)
-
-      id1 = await IdentityProvider.createIdentity({ type: EthIdentityProvider.type, keystore: keystore1 })
-      id2 = await IdentityProvider.createIdentity({ type: EthIdentityProvider.type, keystore: keystore2 })
+      const identities = new IdentityProvider({ keystore })
+      id1 = await identities.createIdentity({ type: EthIdentityProvider.type })
+      id2 = await identities.createIdentity({ type: EthIdentityProvider.type })
 
       web3 = new Web3(ganache.provider())
       accounts = await web3.eth.getAccounts()
@@ -70,13 +69,15 @@ Object.keys(testAPIs).forEach(API => {
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         AccessControllers: AccessControllers,
         directory: dbPath1,
-        identity: id1
+        identity: id1,
+        identities
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
         AccessControllers: AccessControllers,
         directory: dbPath2,
-        identity: id2
+        identity: id2,
+        identities
       })
     })
 
@@ -132,16 +133,16 @@ Object.keys(testAPIs).forEach(API => {
             // doesn't matter what we put here, only identity is used for the check
           }
           await accessController.grant('write', id1.id)
-          const canAppend = await accessController.canAppend(mockEntry, id1.provider)
+          const canAppend = await accessController.canAppend(mockEntry)
           assert.strictEqual(canAppend, true)
         })
 
         it('grants access to multiple keys', async () => {
-          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
-          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
+          const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
+          const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
 
           await accessController.grant('write', orbitdb2.identity.id)
-          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
+          const canAppend3 = await accessController.canAppend({ identity: orbitdb2.identity })
 
           assert.strictEqual(canAppend1, true)
           assert.strictEqual(canAppend2, false)
@@ -174,9 +175,9 @@ Object.keys(testAPIs).forEach(API => {
           })
 
           it('has correct capabalities', async () => {
-            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity }, orbitdb1.identity.provider)
-            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity }, orbitdb2.identity.provider)
-            const canAppend3 = await accessController.canAppend({ identity: { id: 'someotherid' } }, orbitdb1.identity.provider)
+            const canAppend1 = await accessController.canAppend({ identity: orbitdb1.identity })
+            const canAppend2 = await accessController.canAppend({ identity: orbitdb2.identity })
+            const canAppend3 = await accessController.canAppend({ identity: { id: 'someotherid' } })
 
             assert.strictEqual(canAppend1, true)
             assert.strictEqual(canAppend2, true)
