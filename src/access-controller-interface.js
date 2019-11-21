@@ -37,7 +37,7 @@ class AccessController extends EventEmitter {
     be allowed in the database. Return true if the entry is allowed,
     false is not allowed
   */
-  async canAppend (entry, identityProvider) {}
+  async canAppend (entry) {}
 
   /* Add and remove access */
   async grant (access, identity) { return false }

@@ -51,7 +51,7 @@ class DepositContractAccessController extends AccessController {
     return { address: cid }
   }
 
-  async canAppend (entry, identityProvider) {
+  async canAppend (entry) {
     // Write the custom access control logic here
     if (!isValidEthAddress(this.web3, entry.identity.id)) {
       console.warn(`WARNING: "${entry.identity.id}" is not a valid eth address`)

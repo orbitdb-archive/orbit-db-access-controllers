@@ -4,7 +4,6 @@ const assert = require('assert')
 const rmrf = require('rimraf')
 const Web3 = require('web3')
 const OrbitDB = require('orbit-db')
-const IdentityProvider = require('orbit-db-identity-provider')
 const Keystore = require('orbit-db-keystore')
 const AccessControllers = require('../')
 const ContractAccessController = require('../src/contract-access-controller.js')
@@ -28,7 +27,7 @@ Object.keys(testAPIs).forEach(API => {
   describe(`orbit-db - Access Controller Handlers (${API})`, function () {
     this.timeout(config.timeout)
 
-    let web3, contract, ipfsd1, ipfsd2, ipfs1, ipfs2, id1, id2
+    let web3, contract, ipfsd1, ipfsd2, ipfs1, ipfs2
     let orbitdb1, orbitdb2
 
     before(async () => {
@@ -43,22 +42,24 @@ Object.keys(testAPIs).forEach(API => {
       ipfs1 = ipfsd1.api
       ipfs2 = ipfsd2.api
 
-      const keystore1 = Keystore.create(dbPath1 + '/keys')
-      const keystore2 = Keystore.create(dbPath2 + '/keys')
+      const keystore1 = new Keystore(dbPath1 + '/keys')
+      const keystore2 = new Keystore(dbPath2 + '/keys')
 
-      id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1 })
-      id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
+      // id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1 })
+      // id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
 
       orbitdb1 = await OrbitDB.createInstance(ipfs1, {
         AccessControllers: AccessControllers,
         directory: dbPath1,
-        identity: id1
+        id: 'A',
+        keystore: keystore1
       })
 
       orbitdb2 = await OrbitDB.createInstance(ipfs2, {
         AccessControllers: AccessControllers,
         directory: dbPath2,
-        identity: id2
+        id: 'B',
+        keystore: keystore2
       })
     })
 
