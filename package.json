@@ -36,7 +36,7 @@
     "datastore-level": "~0.12.0",
     "ganache-cli": "^6.3.0",
     "go-ipfs-dep": "0.4.19",
-    "ipfs": "~0.36.3",
+    "ipfs": "~0.39.0",
     "ipfs-repo": "~0.26.6",
     "ipfsd-ctl": "~0.42.4",
     "mocha": "^5.2.0",
