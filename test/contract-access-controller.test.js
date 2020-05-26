@@ -18,7 +18,7 @@ const {
   startIpfs,
   stopIpfs,
   testAPIs
-} = require('./utils')
+} = require('orbit-db-test-utils')
 
 const dbPath1 = './orbitdb/tests/contract-access-controller/1'
 const dbPath2 = './orbitdb/tests/contract-access-controller/2'
