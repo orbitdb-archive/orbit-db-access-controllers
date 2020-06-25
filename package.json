@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
   "dependencies": {
-    "orbit-db-io": "~0.1.0",
+    "orbit-db-io": "^0.2.0",
     "p-map-series": "^1.0.0"
   },
   "devDependencies": {
