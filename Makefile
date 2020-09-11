@@ -1,7 +1,7 @@
 all:    |   clean-dependencies  test
 
 deps:	clean
-	npm	install
+	npm	install --no-optional
 
 test:	deps
 	npm	run	test
