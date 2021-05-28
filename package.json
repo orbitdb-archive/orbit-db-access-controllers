@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "@colony/purser-software": "^1.2.7",
-    "@mapbox/node-pre-gyp": "^1.0.5",
     "datastore-level": "~5.0.1",
     "ganache-cli": "^6.12.2",
     "go-ipfs": "^0.8.0",
