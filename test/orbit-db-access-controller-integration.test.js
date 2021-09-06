@@ -13,12 +13,10 @@ const {
   startIpfs,
   stopIpfs,
   testAPIs
-} = require('./utils')
+} = require('orbit-db-test-utils')
 
 const dbPath1 = './orbitdb/tests/orbitdb-access-controller-integration/1'
 const dbPath2 = './orbitdb/tests/orbitdb-access-controller-integration/2'
-const ipfsPath1 = './orbitdb/tests/orbitdb-access-controller-integration/1/ipfs'
-const ipfsPath2 = './orbitdb/tests/orbitdb-access-controller-integration/2/ipfs'
 
 Object.keys(testAPIs).forEach(API => {
   describe(`orbit-db - OrbitDBAccessController Integration (${API})`, function () {
@@ -28,10 +26,6 @@ Object.keys(testAPIs).forEach(API => {
     let orbitdb1, orbitdb2
 
     before(async () => {
-      config.daemon1.repo = ipfsPath1
-      config.daemon2.repo = ipfsPath2
-      rmrf.sync(config.daemon1.repo)
-      rmrf.sync(config.daemon2.repo)
       rmrf.sync(dbPath1)
       rmrf.sync(dbPath2)
       ipfsd1 = await startIpfs(API, config.daemon1)
@@ -39,8 +33,8 @@ Object.keys(testAPIs).forEach(API => {
       ipfs1 = ipfsd1.api
       ipfs2 = ipfsd2.api
 
-      const keystore1 = Keystore.create(dbPath1 + '/keys')
-      const keystore2 = Keystore.create(dbPath2 + '/keys')
+      const keystore1 = new Keystore(dbPath1 + '/keys')
+      const keystore2 = new Keystore(dbPath2 + '/keys')
 
       id1 = await IdentityProvider.createIdentity({ id: 'A', keystore: keystore1 })
       id2 = await IdentityProvider.createIdentity({ id: 'B', keystore: keystore2 })
