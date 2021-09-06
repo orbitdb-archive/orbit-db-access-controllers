@@ -22,8 +22,6 @@ const {
 
 const dbPath1 = './orbitdb/tests/contract-access-controller-integration/1'
 const dbPath2 = './orbitdb/tests/contract-access-controller-integration/2'
-const ipfsPath1 = './orbitdb/tests/contract-access-controller-integration/1/ipfs'
-const ipfsPath2 = './orbitdb/tests/contract-access-controller-integration/2/ipfs'
 
 const accessControllers = [
   {
