@@ -39,9 +39,9 @@
     "mocha": "^5.2.0",
     "orbit-db": "^0.26.1",
     "orbit-db-identity-provider": "^0.4.0",
-    "orbit-db-io": "github:tabcat/orbit-db-io#upgrade-ipfs",
+    "orbit-db-io": "^1.0.1-07d6eb1.0",
     "orbit-db-keystore": "^1.0.0",
-    "orbit-db-test-utils": "github:tabcat/orbit-db-test-utils#upgrade-ipfs",
+    "orbit-db-test-utils": "^1.2.2-78bc242.0",
     "standard": "^14.1.0",
     "web3": "^1.5.2"
   },
