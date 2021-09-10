@@ -32,11 +32,13 @@
   },
   "devDependencies": {
     "@colony/purser-software": "^1.1.2",
+    "eslint": "^7.32.0",
     "ganache-cli": "^6.12.2",
     "go-ipfs": "^0.10.0-rc1",
     "ipfs": "^0.58.3",
     "ipfsd-ctl": "^10.0.3",
     "mocha": "^5.2.0",
+    "node-pre-gyp": "^0.13.0",
     "orbit-db": "^0.26.1",
     "orbit-db-identity-provider": "^0.4.0",
     "orbit-db-io": "^1.0.1-07d6eb1.0",
