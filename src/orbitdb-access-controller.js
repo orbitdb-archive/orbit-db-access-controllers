@@ -93,7 +93,13 @@ class OrbitDBAccessController extends AccessController {
       address: this._db.address.toString()
     }
   }
-
+  
+  async hasCapability (capability, identity) {
+    // Write keys and admins keys are allowed
+    const access = new Set(this.get(capability))
+    return access.has(identity.id) || access.has("*")
+  }
+  
   async grant (capability, key) {
     // Merge current keys with the new key
     const capabilities = new Set([...(this._db.get(capability) || []), ...[key]])
