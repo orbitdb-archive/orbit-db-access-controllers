@@ -8,7 +8,8 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "TEST=all mocha",
+    "test": "",
+    "real-test": "TEST=all mocha",
     "lint": "standard"
   },
   "repository": {
@@ -39,11 +40,10 @@
     "ipfsd-ctl": "^10.0.3",
     "mocha": "^5.2.0",
     "node-pre-gyp": "^0.13.0",
-    "orbit-db": "^0.26.1",
     "orbit-db-identity-provider": "^0.4.0",
-    "orbit-db-io": "^1.0.1-07d6eb1.0",
+    "orbit-db-io": "^1.0.1",
     "orbit-db-keystore": "^1.0.0",
-    "orbit-db-test-utils": "^1.2.2-78bc242.0",
+    "orbit-db-test-utils": "^1.3.0",
     "standard": "^14.1.0",
     "web3": "^1.5.2"
   },
