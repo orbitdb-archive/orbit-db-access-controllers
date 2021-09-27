@@ -8,8 +8,6 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "",
-    "real-test": "TEST=all mocha",
     "lint": "standard"
   },
   "repository": {
