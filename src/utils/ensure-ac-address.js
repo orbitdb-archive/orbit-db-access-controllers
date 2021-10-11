@@ -5,6 +5,6 @@ const ensureAddress = address => {
   const suffix = address.toString().split('/').pop()
   return suffix === '_access'
     ? address
-    : path.join(address, '/_access')
+    : (path.posix || path).join(address, '/_access')
 }
 module.exports = ensureAddress
