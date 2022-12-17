@@ -1,6 +1,4 @@
-'use strict'
-
-const EventEmitter = require('events').EventEmitter
+import { EventEmitter } from 'events'
 
 /**
  * Interface for OrbitDB Access Controllers
@@ -8,7 +6,7 @@ const EventEmitter = require('events').EventEmitter
  * Any OrbitDB access controller needs to define and implement
  * the methods defined by the interface here.
  */
-class AccessController extends EventEmitter {
+export default class AccessController extends EventEmitter {
   /*
     Every AC needs to have a 'Factory' method
     that creates an instance of the AccessController
@@ -50,5 +48,3 @@ class AccessController extends EventEmitter {
   /* Called when the database for this AC gets closed */
   async close () {}
 }
-
-module.exports = AccessController

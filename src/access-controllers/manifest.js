@@ -1,7 +1,6 @@
-'use strict'
-const io = require('orbit-db-io')
+import * as io from 'orbit-db-io'
 
-class AccessControllerManifest {
+export default class AccessControllerManifest {
   constructor (type, params = {}) {
     this.type = type
     this.params = params
@@ -26,11 +25,9 @@ class AccessControllerManifest {
       return params.address
     }
     const manifest = {
-      type: type,
-      params: params
+      type,
+      params
     }
     return io.write(ipfs, 'dag-cbor', manifest)
   }
 }
-
-module.exports = AccessControllerManifest
