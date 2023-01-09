@@ -1,9 +1,8 @@
-'use strict'
-const { io } = require('./utils')
-const AccessController = require('./access-controller-interface')
+import * as io from '../utils/index.js'
+import AccessController from './interface.js'
 const type = 'ipfs'
 
-class IPFSAccessController extends AccessController {
+export default class IPFSAccessController extends AccessController {
   constructor (ipfs, options) {
     super()
     this._ipfs = ipfs
@@ -56,5 +55,3 @@ class IPFSAccessController extends AccessController {
     return new IPFSAccessController(orbitdb._ipfs, options)
   }
 }
-
-module.exports = IPFSAccessController

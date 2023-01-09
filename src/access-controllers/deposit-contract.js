@@ -1,10 +1,9 @@
-'use strict'
-const isValidEthAddress = require('./utils/is-valid-eth-address')
-const AccessController = require('./access-controller-interface')
-const io = require('orbit-db-io')
-const type = 'eth-contract/cool-contract'
+import AccessController from './interface.js'
+import isValidEthAddress from '../utils/is-valid-eth-address.js'
+import * as io from 'orbit-db-io'
+const type = 'eth-contract/deposit-contract'
 
-class ContractAccessController extends AccessController {
+export default class DepositContractAccessController extends AccessController {
   constructor (ipfs, web3, abi, address, defaultAccount) {
     super()
     this._ipfs = ipfs
@@ -30,7 +29,7 @@ class ContractAccessController extends AccessController {
         this.contractAddress = access.contractAddress
         this.abi = JSON.parse(access.abi)
       } catch (e) {
-        console.log('ContractAccessController.load ERROR:', e)
+        console.log('DepositContractAccessController.load ERROR:', e)
       }
     }
     this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress)
@@ -41,10 +40,10 @@ class ContractAccessController extends AccessController {
     try {
       cid = await io.write(this._ipfs, 'dag-cbor', {
         contractAddress: this.address,
-        abi: JSON.stringify(this.abi, null, 2)
+        abi: JSON.stringify(this.abi)
       })
     } catch (e) {
-      console.log('ContractAccessController.save ERROR:', e)
+      console.log('DepositContractAccessController.save ERROR:', e)
     }
     // return the manifest data
     return { address: cid }
@@ -56,13 +55,7 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${entry.identity.id}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    const isPermitted = await this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
-    if (isPermitted) {
-      const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
-      // Allow access if identity verifies
-      return Promise.resolve(verifiedIdentity)
-    }
-    return Promise.resolve(false)
+    return this.contract.methods.hasPaidDeposit(entry.identity.id).call()
   }
 
   async grant (capability, identifier, options = {}) {
@@ -70,8 +63,13 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${identifier}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    options = Object.assign({}, { from: this.defaultAccount }, options)
-    return this.contract.methods.grantCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
+    if (capability === 'admin') {
+      // do one thing
+      return Promise.resolve(false)
+    } else if (capability === 'write') {
+      options = Object.assign({}, { from: this.defaultAccount }, options)
+      return this.contract.methods.payDeposit(identifier).send(options)
+    }
   }
 
   async revoke (capability, identifier, options = {}) {
@@ -79,8 +77,14 @@ class ContractAccessController extends AccessController {
       console.warn(`WARNING: "${identifier}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    options = Object.assign({}, { from: this.defaultAccount }, options)
-    return this.contract.methods.revokeCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
+
+    if (capability === 'admin') {
+      // do one thing
+      return Promise.resolve(false)
+    } else if (capability === 'write') {
+      options = Object.assign({}, { from: this.defaultAccount }, options)
+      return this.contract.methods.expireDeposit(identifier).send(options)
+    }
   }
 
   // Factory
@@ -98,7 +102,7 @@ class ContractAccessController extends AccessController {
       console.warn('WARNING: no defaultAccount set')
     }
 
-    return new ContractAccessController(
+    return new DepositContractAccessController(
       orbitdb._ipfs,
       options.web3,
       options.abi,
@@ -107,5 +111,3 @@ class ContractAccessController extends AccessController {
     )
   }
 }
-
-module.exports = ContractAccessController

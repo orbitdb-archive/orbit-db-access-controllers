@@ -1,10 +1,9 @@
-'use strict'
-const io = require('orbit-db-io')
-const Buffer = require('safe-buffer/').Buffer
-const AccessController = require('./access-controller-interface')
+import * as io from 'orbit-db-io'
+import { Buffer } from 'safe-buffer'
+import AccessController from './interface.js'
 const type = 'legacy-ipfs'
 
-class LegacyIPFSAccessController extends AccessController {
+export default class LegacyIPFSAccessController extends AccessController {
   constructor (ipfs, options) {
     super()
     this._ipfs = ipfs
@@ -59,5 +58,3 @@ class LegacyIPFSAccessController extends AccessController {
     return new LegacyIPFSAccessController(orbitdb._ipfs, options)
   }
 }
-
-module.exports = LegacyIPFSAccessController

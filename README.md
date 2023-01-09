@@ -21,6 +21,8 @@ By default, if no write-array is specified in options, the access control is set
 You can create a custom access controller by implementing the `AccessController` [interface](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/access-controller-interface.js) and adding it to the AccessControllers object before passing it to OrbitDB. For more detailed examples, see the implementation of the [Ethereum Contract Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/contract-access-controller.js) and [OrbitDB Access Controller](https://github.com/orbitdb/orbit-db-access-controllers/blob/master/src/orbitdb-access-controller.js).
 
 ```javascript
+import AccessControllers from 'orbit-db-access-controllers'
+
 class OtherAccessController extends AccessController {
 
   static get type () { return 'othertype' } // Return the type for this controller
@@ -35,7 +37,6 @@ class OtherAccessController extends AccessController {
   async grant (access, identity) {} // Logic for granting access to identity
 }
 
-let AccessControllers = require('orbit-db-access-controllers')
 AccessControllers.addAccessController({ AccessController: OtherAccessController })
 
 const orbitdb = await OrbitDB.createInstance(ipfs, {

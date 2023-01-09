@@ -1,12 +1,10 @@
-'use strict'
-
-const pMapSeries = require('p-map-series')
-const AccessController = require('./access-controller-interface')
-const ensureAddress = require('./utils/ensure-ac-address')
+import pMapSeries from 'p-map-series'
+import AccessController from './interface.js'
+import ensureAddress from '../utils/ensure-ac-address.js'
 
 const type = 'orbitdb'
 
-class OrbitDBAccessController extends AccessController {
+export default class OrbitDBAccessController extends AccessController {
   constructor (orbitdb, options) {
     super()
     this._orbitdb = orbitdb
@@ -93,13 +91,13 @@ class OrbitDBAccessController extends AccessController {
       address: this._db.address.toString()
     }
   }
-  
+
   async hasCapability (capability, identity) {
     // Write keys and admins keys are allowed
     const access = new Set(this.get(capability))
-    return access.has(identity.id) || access.has("*")
+    return access.has(identity.id) || access.has('*')
   }
-  
+
   async grant (capability, key) {
     // Merge current keys with the new key
     const capabilities = new Set([...(this._db.get(capability) || []), ...[key]])
@@ -134,5 +132,3 @@ class OrbitDBAccessController extends AccessController {
     return ac
   }
 }
-
-module.exports = OrbitDBAccessController

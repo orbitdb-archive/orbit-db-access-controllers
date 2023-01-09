@@ -1,9 +1,2 @@
-'use strict'
-
-const isValidEthAddress = require('./is-valid-eth-address')
-const io = require('./io.js')
-
-module.exports = {
-  io,
-  isValidEthAddress
-}
+export { default as isValidEthAddress } from './is-valid-eth-address.js'
+export { read, write } from './io.js'

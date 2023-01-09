@@ -1,11 +1,9 @@
-'use strict'
+import isValidEthAddress from '../utils/is-valid-eth-address.js'
+import AccessController from './interface.js'
+import * as io from 'orbit-db-io'
+const type = 'eth-contract/cool-contract'
 
-const AccessController = require('./access-controller-interface')
-const isValidEthAddress = require('./utils/is-valid-eth-address')
-const io = require('orbit-db-io')
-const type = 'eth-contract/deposit-contract'
-
-class DepositContractAccessController extends AccessController {
+export default class ContractAccessController extends AccessController {
   constructor (ipfs, web3, abi, address, defaultAccount) {
     super()
     this._ipfs = ipfs
@@ -31,7 +29,7 @@ class DepositContractAccessController extends AccessController {
         this.contractAddress = access.contractAddress
         this.abi = JSON.parse(access.abi)
       } catch (e) {
-        console.log('DepositContractAccessController.load ERROR:', e)
+        console.log('ContractAccessController.load ERROR:', e)
       }
     }
     this.contract = new this.web3.eth.Contract(this.abi, this.contractAddress)
@@ -42,10 +40,10 @@ class DepositContractAccessController extends AccessController {
     try {
       cid = await io.write(this._ipfs, 'dag-cbor', {
         contractAddress: this.address,
-        abi: JSON.stringify(this.abi)
+        abi: JSON.stringify(this.abi, null, 2)
       })
     } catch (e) {
-      console.log('DepositContractAccessController.save ERROR:', e)
+      console.log('ContractAccessController.save ERROR:', e)
     }
     // return the manifest data
     return { address: cid }
@@ -57,7 +55,13 @@ class DepositContractAccessController extends AccessController {
       console.warn(`WARNING: "${entry.identity.id}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    return this.contract.methods.hasPaidDeposit(entry.identity.id).call()
+    const isPermitted = await this.contract.methods.isPermitted(entry.identity.id, this.web3.utils.fromAscii('write')).call()
+    if (isPermitted) {
+      const verifiedIdentity = await identityProvider.verifyIdentity(entry.identity)
+      // Allow access if identity verifies
+      return Promise.resolve(verifiedIdentity)
+    }
+    return Promise.resolve(false)
   }
 
   async grant (capability, identifier, options = {}) {
@@ -65,13 +69,8 @@ class DepositContractAccessController extends AccessController {
       console.warn(`WARNING: "${identifier}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-    if (capability === 'admin') {
-      // do one thing
-      return Promise.resolve(false)
-    } else if (capability === 'write') {
-      options = Object.assign({}, { from: this.defaultAccount }, options)
-      return this.contract.methods.payDeposit(identifier).send(options)
-    }
+    options = Object.assign({}, { from: this.defaultAccount }, options)
+    return this.contract.methods.grantCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
   }
 
   async revoke (capability, identifier, options = {}) {
@@ -79,14 +78,8 @@ class DepositContractAccessController extends AccessController {
       console.warn(`WARNING: "${identifier}" is not a valid eth address`)
       return Promise.resolve(false)
     }
-
-    if (capability === 'admin') {
-      // do one thing
-      return Promise.resolve(false)
-    } else if (capability === 'write') {
-      options = Object.assign({}, { from: this.defaultAccount }, options)
-      return this.contract.methods.expireDeposit(identifier).send(options)
-    }
+    options = Object.assign({}, { from: this.defaultAccount }, options)
+    return this.contract.methods.revokeCapability(identifier, this.web3.utils.fromAscii(capability)).send(options)
   }
 
   // Factory
@@ -104,7 +97,7 @@ class DepositContractAccessController extends AccessController {
       console.warn('WARNING: no defaultAccount set')
     }
 
-    return new DepositContractAccessController(
+    return new ContractAccessController(
       orbitdb._ipfs,
       options.web3,
       options.abi,
@@ -113,5 +106,3 @@ class DepositContractAccessController extends AccessController {
     )
   }
 }
-
-module.exports = DepositContractAccessController
