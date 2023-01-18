@@ -1,6 +1,6 @@
 {
   "name": "orbit-db-access-controllers",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Access Controllers for OrbitDB",
   "keywords": [
     "orbit",
@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/orbitdb/orbit-db-access-controllers#readme",
   "dependencies": {
-    "orbit-db-io": "next",
+    "orbit-db-io": "^3.0.0",
     "p-map-series": "^3.0.0",
     "safe-buffer": "^5.2.1"
   },
